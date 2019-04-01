@@ -11,17 +11,26 @@
   2. 安装google-perfile
   wget https://github.com/gperftools/gperftools/releases/download/gperftools-2.5/gperftools-2.5.tar.gz
   
+# heap profiler
 ## 配置方法
   1. vi /etc/ld.so.conf.d/usr_local_lib.conf  
   2. 添加 /usr/local/lib(默认安装路径), ldconfig
   3. 设置应用程序
   ```sh
-  export LD_PRELOAD=/usr/loacl/lib/libtcmalloc.so #连接这个库
-  export HEAPPROFILE=/root/luo/test               #打印文件名字和路径 
+  #export LD_PRELOAD=/usr/loacl/lib/libtcmalloc.so #连接这个库
+  #export HEAPPROFILE=/root/luo/test               #打印文件名字和路径
+  
+  g++ [...] -g -o myprogram -ltcmalloc
+  HEAPPROFILE=/tmp/netheap ./myprogram
   ```
 ## 使用
   1. 运行要测的程序(如果没有参数打印文件，需要重新编译程序连接libtcmalloc.so这个库)
-  2.使用pprof分析: pprof --text 程序执行绝对路径 打印文件绝对路径
+  2. 使用pprof分析: pprof --text 程序执行绝对路径 打印文件绝对路径
+  
+  
+  ```sh
+  pprof --text ./myprogram /tmp/netheap.0001.heap
+  ```
 ### 报告说明
 ```
 Total: 237.3 MB
