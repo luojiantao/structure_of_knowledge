@@ -74,3 +74,5 @@ int val = futureObj.get();
 /*但是如果线程2还没有对该值进行设置，那么这个调用将会阻塞，直到线程2在promise对象中对该值进行设置。*/
 promiseObj.set_value(45);
 ```
+完整流程如图：
+![avatar](thread_png/20171111173024298.png)
