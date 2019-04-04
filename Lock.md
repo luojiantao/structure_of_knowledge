@@ -98,6 +98,16 @@ std::unique_lock 与std::lock_guard都能实现自动加锁与解锁功能，但
 	    newNode->next = oldHead;
 	  }
 	}
+        void pop(int& val){
+	    Node* oldtail = list_tail;
+	    Node* newtail = odltail->front();
+	    
+	    while(!list_tail.compare_exchange_weak(oldtail,newtail)){
+	        newtail = oldtail->front();
+	    }
+	    list_tail->next = NULL;
+	    val = oldtail->val;
+	}
 	```
 ## 锁和CAS
 - 锁
