@@ -65,7 +65,37 @@ std::unique_lock 与std::lock_guard都能实现自动加锁与解锁功能，但
 		weak版本的CAS允许偶然出乎意料的返回（比如在字段值和期待值一样的时候却返回了false），不过在一些循环算法中，这是可以接受的。通常它比起strong有更高的性能。
 	```C++
 	//DEMO
+	#include <atomic>
+	//------------------------------------------------------------
+	std::atomic<int> aa(10);
+	int aa1 = 10;
+	aa.compare_exchange_weak(aa1, 11);//执行结果，aa:11, aa1:10,语句返回true
+	//------------------------------------------------------------
+	
+	std::atomic<int> aa(10);
+	int aa1 = 12;
+	aa.compare_exchange_weak(aa1, 11);//执行结果，aa:10, aa1:10,语句返回false
 	
 	```
+	- 实现无锁对队列的例子
+	```C++
+	#include <iostream>       // std::cout
+	#include <atomic>         // std::atomic
+	#include <thread>         // std::thread
+	#include <vector>         // std::vector
 
+	// a simple global linked list:
+	struct Node { int value; Node* next; };
+	std::atomic<Node*> list_head (nullptr);
+
+	void append (int val) {     // append an element to the list
+	  Node* oldHead = list_head;
+	  Node* newNode = new Node {val,oldHead};
+
+	  // what follows is equivalent to: list_head = newNode, but in a thread-safe way:
+	  while (!list_head.compare_exchange_weak(oldHead,newNode)) {
+	    newNode->next = oldHead;
+	  }
+	}
+	```
 
