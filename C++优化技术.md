@@ -121,3 +121,4 @@ int main(){
     return 1;
 }
 ```
+## RAII ”资源分配时初始化”
