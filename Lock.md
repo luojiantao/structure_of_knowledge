@@ -63,6 +63,7 @@ std::unique_lock 与std::lock_guard都能实现自动加锁与解锁功能，但
 
     5. compare_exchange_strong
 		weak版本的CAS允许偶然出乎意料的返回（比如在字段值和期待值一样的时候却返回了false），不过在一些循环算法中，这是可以接受的。通常它比起strong有更高的性能。
+	- CAS的语义是“我认为V的值应该为A，如果是，那么将V的值更新为B，否则不修改并告诉V的值实际为多少”
 	```C++
 	//DEMO
 	#include <atomic>
