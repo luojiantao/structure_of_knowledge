@@ -62,53 +62,83 @@ std::unique_lock 与std::lock_guard都能实现自动加锁与解锁功能，但
       CAS（compare and set）。参数会要求在这里传入期待的数值和新的数值。它们对比变量的值和期待的值是否一致，如果是，则替换为用户指定的一个新的数值。如果不是，则将变量的值和期待的值交换。
 
     5. compare_exchange_strong
-		weak版本的CAS允许偶然出乎意料的返回（比如在字段值和期待值一样的时候却返回了false），不过在一些循环算法中，这是可以接受的。通常它比起strong有更高的性能。
-	- CAS的语义是“我认为V的值应该为A，如果是，那么将V的值更新为B，否则不修改并告诉V的值实际为多少”
-	```C++
-	//DEMO
-	#include <atomic>
-	//------------------------------------------------------------
-	std::atomic<int> aa(10);
-	int aa1 = 10;
-	aa.compare_exchange_weak(aa1, 11);//执行结果，aa:11, aa1:10,语句返回true
-	//------------------------------------------------------------
-	
-	std::atomic<int> aa(10);
-	int aa1 = 12;
-	aa.compare_exchange_weak(aa1, 11);//执行结果，aa:10, aa1:10,语句返回false
-	
-	```
-	- 实现无锁对队列的例子
-	```C++
-	#include <iostream>       // std::cout
-	#include <atomic>         // std::atomic
-	#include <thread>         // std::thread
-	#include <vector>         // std::vector
+  	weak版本的CAS允许偶然出乎意料的返回（比如在字段值和期待值一样的时候却返回了false），不过在一些循环算法中，这是可以接受的。通常它比起strong有更高的性能。
+  - CAS的语义是“我认为V的值应该为A，如果是，那么将V的值更新为B，否则不修改并告诉V的值实际为多少”
+  ```C++
+  //DEMO
+  #include <atomic>
+  //------------------------------------------------------------
+  std::atomic<int> aa(10);
+  int aa1 = 10;
+  aa.compare_exchange_weak(aa1, 11);//执行结果，aa:11, aa1:10,语句返回true
+  //------------------------------------------------------------
+  
+  std::atomic<int> aa(10);
+  int aa1 = 12;
+  aa.compare_exchange_weak(aa1, 11);//执行结果，aa:10, aa1:10,语句返回false
+  
+  ```
+  - 实现无锁对队列的例子
+  ```C++
+  #include <iostream>       // std::cout
+  #include <atomic>         // std::atomic
+  #include <thread>         // std::thread
+  #include <vector>         // std::vector
+  
+  // a simple global linked list:
+  struct Node { int value; Node* next; };
+  std::atomic<Node*> list_head (nullptr);
+  
+  void append (int val) {     // append an element to the list
+    Node* oldHead = list_head;
+    Node* newNode = new Node {val,oldHead};
+  
+    // what follows is equivalent to: list_head = newNode, but in a thread-safe way:
+    while (!list_head.compare_exchange_weak(oldHead,newNode)) {
+      newNode->next = oldHead;
+    }
+  }
+  void pop(int& val){
+      Node* oldtail = list_tail;
+      Node* newtail = odltail->front();
+      
+      while(!list_tail.compare_exchange_weak(oldtail,newtail)){
+          newtail = oldtail->front();
+      }
+      list_tail->next = NULL;
+      val = oldtail->val;
+  }
+  ```
+  - 流程说明,任务出队
+    ![avatar](Lock_png/CAS说明.png)
+    1. S1 初始状态
+    2. S2 抢占状态，抢占处理
+    3. S3 被抢占状态
+    4. S4 被抢占后处理
 
-	// a simple global linked list:
-	struct Node { int value; Node* next; };
-	std::atomic<Node*> list_head (nullptr);
+```flow
+st=>start: 开始框
 
-	void append (int val) {     // append an element to the list
-	  Node* oldHead = list_head;
-	  Node* newNode = new Node {val,oldHead};
+op0=>operation: S1
+op1=>operation: S2
+op2=>operation: S3
+op3=>operation: S4
 
-	  // what follows is equivalent to: list_head = newNode, but in a thread-safe way:
-	  while (!list_head.compare_exchange_weak(oldHead,newNode)) {
-	    newNode->next = oldHead;
-	  }
-	}
-        void pop(int& val){
-	    Node* oldtail = list_tail;
-	    Node* newtail = odltail->front();
-	    
-	    while(!list_tail.compare_exchange_weak(oldtail,newtail)){
-	        newtail = oldtail->front();
-	    }
-	    list_tail->next = NULL;
-	    val = oldtail->val;
-	}
-	```
+cond=>condition: 被其他线程处理(是或否?)
+
+sub1=>subroutine: 子流程
+
+io=>inputoutput: 输入输出框
+
+e=>end: 结束框
+
+
+
+st->op0->cond
+cond(no)->op1->e
+cond(yes)->op2->op3->op0
+```
+
 ## 锁和CAS
 - 锁
 	1. 在多线程竞争下，加锁、释放锁会导致比较多的上下文切换和调度延时，引起性能问题。而且在上下文切换的时候，cpu之前缓存的指令和数据都将失效，对性能有很大的损失。用户态的锁虽然避免了这些问题，但是其实它们只是在没有真实的竞争时才有效。
@@ -118,3 +148,8 @@ std::unique_lock 与std::lock_guard都能实现自动加锁与解锁功能，但
 	1. 一个线程的失败或者挂起不应该影响其他线程的失败或挂起的算法。现代的CPU提供了特殊的指令，可以自动更新共享数据，而且能够检测到其他线程的干扰，而 compareAndSet() 就用这些代替了锁定
 	2. ABA问题。比如说一个线程one从内存位置V中取出A，这时候另一个线程two也从内存中取出A，并且two进行了一些操作变成了B，然后two又将V位置的数据变成A，这时候线程one进行CAS操作发现内存中仍然是A，然后one操作成功。尽管线程one的CAS操作成功，但是不代表这个过程就是没有问题的。如果链表的头在变化了两次后恢复了原值，但是不代表链表就没有变化
 
+
+
+```
+
+```
