@@ -121,4 +121,10 @@ int main(){
     return 1;
 }
 ```
-## RAII ”资源分配时初始化”
+# RAII ”资源分配时初始化”
+
+# 值语义
+## 参考连接
+    [res](http://www.cnblogs.com/Solstice/archive/2011/08/16/2141515.html)
+
+## 什么是值语义
