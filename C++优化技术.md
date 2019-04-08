@@ -280,9 +280,10 @@ C++ 的 class 本质上是值语义的，这才会出现 object slicing 这种�
 C++ 标准库里  complex<> 、pair<>、vector<>、list<>、map<>、set<>、string、stack、queue 都是数据抽象的例子。vector 是动态数组，它的主要操作有 push_back()、size()、begin()、end() 等等，这些操作不仅含义清晰，而且计算复杂度都是常数。类似的，list 是链表，map 是有序关联数组，set 是有序集合、stack 是 FILO 栈、queue是 FIFO 队列。“动态数组”、“链表”、“有序集合”、“关联数组”、“栈”、“队列”**都是定义明确（操作、复杂度）的抽象数据类型**。
 
 ## 数据抽象和面对对象的区别
-    - object-oriented。 封装、继承、多态。对象语义
-    - object-based。只有封装，没有继承和多态，即只有具体类，没有抽象接口。对象语义
-    - data abstraction。数据抽象与它们两个的界限在于“语义”，数据抽象不是对象语义，而是值语义。
+
+- object-oriented。 封装、继承、多态。对象语义
+- object-based。只有封装，没有继承和多态，即只有具体类，没有抽象接口。对象语义
+- data abstraction。数据抽象与它们两个的界限在于“语义”，数据抽象不是对象语义，而是值语义。
 
 数据抽象是针对“数据”的，这意味着 ADT class 应该可以拷贝，只要把数据复制一份就行了。如果一个 class 代表了其他资源（文件、员工、打印机、账号），那么它就是 object-based 或 object-oriented，而不是数据抽象。
 
