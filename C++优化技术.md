@@ -266,4 +266,43 @@ C++ 的 class 本质上是值语义的，这才会出现 object slicing 这种�
     
  这些设计带来了性能上的好处，原因是 memory locality
 
+# 数据抽象
 
+## 什么是数据抽象
+简单的说，数据抽象是用来描述数据结构的。数据抽象就是 ADT。一个 ADT 主要表现为它支持的一些操作，比方说 stack.push、stack.pop，这些操作应该具有明确的时间和空间复杂度。另外，一个 ADT 可以隐藏其实现细节，比方说 stack 既可以用动态数组实现，又可以用链表实现。
+
+按照这个定义，数据抽象和基于对象(object-based)很像，那么它们的区别在哪里？语义不同。**ADT 通常是值语义，而 object-based 是对象语义**。（这两种语义的定义见前文《C++ 工程实践(8)：值语义》）。ADT class 是可以拷贝的，拷贝之后的 instance 与原 instance 脱离关系。
+
+比方说 stack a; a.push(10); stack b = a; b.pop(); 这时候 a 里仍然有元素 10。
+
+## C++ 标准库中的数据抽象
+
+C++ 标准库里  complex<> 、pair<>、vector<>、list<>、map<>、set<>、string、stack、queue 都是数据抽象的例子。vector 是动态数组，它的主要操作有 push_back()、size()、begin()、end() 等等，这些操作不仅含义清晰，而且计算复杂度都是常数。类似的，list 是链表，map 是有序关联数组，set 是有序集合、stack 是 FILO 栈、queue是 FIFO 队列。“动态数组”、“链表”、“有序集合”、“关联数组”、“栈”、“队列”**都是定义明确（操作、复杂度）的抽象数据类型**。
+
+## 数据抽象和面对对象的区别
+    - object-oriented。 封装、继承、多态。对象语义
+    - object-based。只有封装，没有继承和多态，即只有具体类，没有抽象接口。对象语义
+    - data abstraction。数据抽象与它们两个的界限在于“语义”，数据抽象不是对象语义，而是值语义。
+
+数据抽象是针对“数据”的，这意味着 ADT class 应该可以拷贝，只要把数据复制一份就行了。如果一个 class 代表了其他资源（文件、员工、打印机、账号），那么它就是 object-based 或 object-oriented，而不是数据抽象。
+
+ADT class 可以作为 Object-based/object-oriented class 的成员，但反过来不成立，因为这样一来 ADS class 的拷贝就失去意义了。
+
+## 数据抽象需要的基础
+
+不是每个语言都支持数据抽象，下面简要列出“数据抽象”所需的语言设施。
+- 支持数据聚合
+
+    struct
+- 全局函数与重载
+- 成员函数与 private 数据
+
+    数据也可以声明为 private，防止外界意外修改
+- 拷贝控制(copy control)
+    
+    
+- 操作符重载
+- 效率无损
+
+    “抽象”不代表低效。在 C++ 中，提高抽象的层次并不会降低效率
+- 模板与泛型
