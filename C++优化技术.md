@@ -125,7 +125,7 @@ int main(){
 
 # 值语义
 ## 参考连接
-    [res](http://www.cnblogs.com/Solstice/archive/2011/08/16/2141515.html)
+[res](http://www.cnblogs.com/Solstice/archive/2011/08/16/2141515.html)
 ## 术语 
 ### POD
 POD全称Plain Old Data。通俗的讲，一个类或结构体通过二进制拷贝后还能保持其数据不变，那么它就是一个POD类型
