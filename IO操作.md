@@ -404,3 +404,50 @@ sockfd 是要读的套接字描述符。buf 是要读的信息的缓冲。len �
  
 
 ## python 
+参考连接[https://www.cnblogs.com/fanweibin/p/5053328.html](https://www.cnblogs.com/fanweibin/p/5053328.html)
+### demo
+server
+```python
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+
+import socket
+
+ip_port = ('127.0.0.1',9999)
+
+sk = socket.socket()
+sk.bind(ip_port)
+sk.listen(5)
+
+while True:
+    print 'server waiting...'
+    conn,addr = sk.accept()
+
+    client_data = conn.recv(1024)
+    print client_data
+    conn.sendall('不要回答,不要回答,不要回答')
+
+    conn.close()
+
+socket server
+```
+
+client
+```python
+#!/usr/bin/env python
+# -*- coding:utf-8 -*-
+import socket
+ip_port = ('127.0.0.1',9999)
+
+sk = socket.socket()
+sk.connect(ip_port)
+
+sk.sendall('请求占领地球')
+
+server_reply = sk.recv(1024)
+print server_reply
+
+sk.close()
+
+socket client
+```
