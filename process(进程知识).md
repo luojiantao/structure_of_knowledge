@@ -1,12 +1,26 @@
 # 进程数据布局
-从高地址到地址：  
-  1.环境变量(Unix/Linux中全局环境变量，命令行参数)  
-  2.stack区，存放内容和上文同。  
-  3.heap区，存放内容和上文同。值得说明的是：stack区起始地址是在高地址，即是从高地址向低地址延伸。而heap区起始地址是在低地址，即是从低地址向高地址延伸。总结：stack起始地址固定在高地址，heap起始地址固定在低地址，然后两个区都向中间延伸。直到stack区和heap区的结束地址重合则表示没有stack和heap内存空间了。  
-  4.data区，分为bss未初始化的数据区和初始化的数据区。  
-  5.文本(text)区，存放代码的区域。  
+![tt](process_png/1.jpg)
+
+- 程序段(Text):程序代码在内存中的映射，存放函数体的二进制代码 
+
+- 初始化过的数据(Data):在程序运行初已经对变量进行初始化的数据。
+
+- 未初始化过的数据(BSS):在程序运行初未对变量进行初始化的数据。
+
+- 栈 (Stack):存储局部、临时变量，函数调用时，存储函数的返回指针，用于控制函数的调用和返回。在程序块开始时自动分配内存,结束时自动释放内存，其操作方式类似于数据结构中的栈。
+
+- 堆 (Heap):存储动态内存分配,需要程序员手工分配,手工释放.注意它与数据结构中的堆是两回事，分配方式类似于链表。
+
+- 高地址：命令行参数和全局环境变量
+## 注意
+1.Text, BSS, Data段在编译时已经决定了进程将占用多少VM 可以通过size，知道这些信息：
+2.正常情况下，Linux进程不能对用来存放程序代码的内存区域执行写操作，即程序代码是以只读的方式加载到内存中，但它可以被多个进程安全的共享。
+## ex
+![tt](process_png/2.jpg)
 
 # 进程锁
+参考链接
+[https://blog.csdn.net/zyembed/article/details/79884211](https://blog.csdn.net/zyembed/article/details/79884211)
 ```C++
 
 #include <stdio.h>
@@ -33,11 +47,69 @@ int main()
     return 0;
 }
 ```
+## 线程锁转进程锁
+
+进制间同步机制之mutex
+
+1. Mutex锁可以用于进程间互斥？  当然可以。
+
+a) 使用pthread_mutex_t 来实现进程间的互斥。
+
+b) 当必须支持PTHREAD_PROCESS_SHARED属性
+
+c)其中设置共享对象的属性为PTHREAD_PROCESS_SHARED是为了告诉系统该共享对象是跨越进程的，不仅仅对创建它的进程可见；但是仅有这一个条件显然无法满足不同进程使用该同步对象的需求，因为每个进程的地址空间是独立的，位于一个进程的普通内存区域中的对象是无法被其它进程所访问的，能满足这一要求的内存区域是共享内存，因而同步对象要在进程的共享内存区域内创建。
+```C++
+
+#include <pthread.h>
+#include <sys/mman.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+ 
+int main()
+{
+        pthread_mutex_t  *pm_mutex = NULL;
+        pthread_mutexattr_t mutex_shared_attr;
+        int *p_shared = NULL;
+        pid_t pid;
+        //为什么要用mmap映射一个空间呢，因为mmap可以进程间共享内存
+        pm_mutex = (pthread_mutex_t *)mmap(NULL, sizeof(pthread_mutex_t), PROT_READ | PROT_WRITE,
+                                                MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+        p_shared = (int *)mmap(NULL, sizeof(int), PROT_READ | PROT_WRITE,
+                                                MAP_SHARED | MAP_ANONYMOUS, -1, 0);
+        *p_shared = 0;
+ 
+        pthread_mutexattr_init(&mutex_shared_attr);
+        pthread_mutexattr_setpshared(&mutex_shared_attr, PTHREAD_PROCESS_SHARED);
+        pthread_mutex_init(pm_mutex, &mutex_shared_attr);
+ 
+        pid = fork();
+        if(pid ==0)
+        {
+                pthread_mutex_lock(pm_mutex);
+                for (int i = 0; i< 5; i++)
+                {
+                        (*p_shared)++;
+                        sleep(1);
+                        printf("child process value is: %d\n", *p_shared);
+                }
+                pthread_mutex_unlock(pm_mutex);
+                return 0;
+        }else{
+                pthread_mutex_lock(pm_mutex);
+```
+### 参考链接
+[https://blog.csdn.net/zmxiangde_88/article/details/7998458](https://blog.csdn.net/zmxiangde_88/article/details/7998458)
+[https://blog.csdn.net/weixin_42218802/article/details/80331984](https://blog.csdn.net/weixin_42218802/article/details/80331984)
 ## 文件锁
+### flock, lockf, fcntl
+首先flock和fcntl是系统调用，而lockf是库函数。lockf实际上是fcntl的封装，所以lockf和fcntl的底层实现是一样的，对文件加锁的效果也是一样的。后面分析不同点时大多数情况是将fcntl和lockf放在一起的。
+[https://www.cnblogs.com/charlesblc/p/6287631.html](https://www.cnblogs.com/charlesblc/p/6287631.html)
 ### linux
 1. 函数名  
   int flock(int fd,int operation);
 2. 头文件  
+
    #include<sys/file.h>
 3. 函数说明  
   flock()会依参数operation所指定的方式对参数fd所指的文件做各种锁定或解除锁定的动作。**此函数只能锁定整个文件，无法锁定文件的某一区域**
@@ -141,3 +213,107 @@ _In_ DWORD nNumberOfBytesToLockHigh
 ## 信息量
 ## 管道
 ## 共享内存
+### mmap系统调用
+mmap将一个文件或者其它对象映射进内存。文件被映射到多个页上，如果文件的大小不是所有页的大小之和，最后一个页不被使用的空间将会清零。munmap执行相反的操作，删除特定地址区域的对象映射。
+#### 参考链接
+[https://www.cnblogs.com/xiaocry/p/5529712.html](https://www.cnblogs.com/xiaocry/p/5529712.html)
+```C++
+#include <sys/mman.h>
+void *mmap(void *start, size_t length, int prot, int flags,int fd, off_t offset);
+//start：映射区的开始地址。
+
+//length：映射区的长度。
+
+//prot：期望的内存保护标志，不能与文件的打开模式冲突。是以下的某个值，可以通过or运算合理地组合在一起。
+//PROT_EXEC //页内容可以被执行
+
+//PROT_READ //页内容可以被读取
+
+//PROT_WRITE //页可以被写入
+
+//PROT_NONE //页不可访问
+
+//flags：指定映射对象的类型，映射选项和映射页是否可以共享。它的值可以是一个或者多个以下位的组合体
+/*
+MAP_FIXED //使用指定的映射起始地址，如果由start和len参数指定的内存区重叠于现存的映射空间，重叠部分将会被丢弃。如果指定的起始地址不可用，操作将会失败。并且起始地址必须落在页的边界上。
+
+MAP_SHARED //与其它所有映射这个对象的进程共享映射空间。对共享区的写入，相当于输出到文件。直到msync()或者munmap()被调用，文件实际上不会被更新。
+
+MAP_PRIVATE //建立一个写入时拷贝的私有映射。内存区域的写入不会影响到原文件。这个标志和以上标志是互斥的，只能使用其中一个。
+
+MAP_DENYWRITE //这个标志被忽略。
+
+MAP_EXECUTABLE //同上
+
+MAP_NORESERVE //不要为这个映射保留交换空间。当交换空间被保留，对映射区修改的可能会得到保证。当交换空间不被保留，同时内存不足，对映射区的修改会引起段违例信号。
+
+MAP_LOCKED //锁定映射区的页面，从而防止页面被交换出内存。
+
+MAP_GROWSDOWN //用于堆栈，告诉内核VM系统，映射区可以向下扩展。
+
+MAP_ANONYMOUS //匿名映射，映射区不与任何文件关联。
+
+MAP_ANON //MAP_ANONYMOUS的别称，不再被使用。
+
+MAP_FILE //兼容标志，被忽略。
+
+MAP_32BIT //将映射区放在进程地址空间的低2GB，MAP_FIXED指定时会被忽略。当前这个标志只在x86-64平台上得到支持。
+
+MAP_POPULATE //为文件映射通过预读的方式准备好页表。随后对映射区的访问不会被页违例阻塞。
+
+MAP_NONBLOCK //仅和MAP_POPULATE一起使用时才有意义。不执行预读，只为已存在于内存中的页面建立页表入口。
+*/
+//fd：有效的文件描述词。如果MAP_ANONYMOUS被设定，为了兼容问题，其值应为-1。
+
+//offset：被映射对象内容的起点。
+```
+成功执行时，mmap()返回被映射区的指针.失败时，mmap()返回MAP_FAILED其值为-1
+#### errno被设为以下的某个值
+
+EACCES：访问出错
+
+EAGAIN：文件已被锁定，或者太多的内存已被锁定
+
+EBADF：fd不是有效的文件描述词
+
+EINVAL：一个或者多个参数无效
+
+ENFILE：已达到系统对打开文件的限制
+
+ENODEV：指定文件所在的文件系统不支持内存映射
+
+ENOMEM：内存不足，或者进程已超出最大内存映射数量
+
+EPERM：权能不足，操作不允许
+
+ETXTBSY：已写的方式打开文件，同时指定MAP_DENYWRITE标志
+
+SIGSEGV：试着向只读区写入
+
+SIGBUS：试着访问不属于进程的内存区
+
+### munmap
+```C++
+#include <sys/mman.h>
+int munmap(void *start, size_t length);
+//该调用在进程地址空间中解除一个映射关系，addr是调用mmap()时返回的地址，len是映射区的大小。当映射关系解除后，对原来映射地址的访问将导致段错误发生。 
+```
+成功munmap()返回0.失败munmap返回-1。errno被设为以下的某个值
+
+### 系统调用msync()
+int msync ( void * addr , size_t len, int flags)   
+一般说来，进程在映射空间的对共享内容的改变并不直接写回到磁盘文件中，往往在调用munmap（）后才执行该操作。可以通过调用msync()实现磁盘上文件内容与共享内存区的内容一致。
+### 系统调用mmap()用于共享内存的两种方式：
+1. 使用普通文件提供的内存映射：适用于任何进程之间；此时，需要打开或创建一个文件，然后再调用mmap()；典型调用代码如下： 
+```C++
+fd=open(name, flag, mode);
+if(fd<0)
+...
+ptr=mmap(NULL, len , PROT_READ|PROT_WRITE, MAP_SHARED , fd , 0);
+```
+2. 使用特殊文件提供匿名内存映射：适用于具有亲缘关系的进程之间；由于父子进程特殊的亲缘关系，在父进程中先调用mmap()，然后调用fork()。那么在调用fork()之后，子进程继承父进程匿名映射后的地址空间，同样也继承mmap()返回的地址，这样，父子进程就可以通过映射区域进行通信了。注意，这里不是一般的继承关系。一般来说，子进程单独维护从父进程继承下来的一些变量。而mmap()返回的地址，却由父子进程共同维护。 
+对于具有亲缘关系的进程实现共享内存最好的方式应该是采用匿名内存映射的方式。此时，不必指定具体的文件，只要设置相应的标志即可.
+
+### 原理
+1. 在用户虚拟地址空间中寻找空闲的满足要求的一段连续的虚拟地址空间,为映射做准备(由内核mmap系统调用完成)
+2. 建立虚拟地址空间和文件或设备的物理地址之间的映射(设备驱动完成)
