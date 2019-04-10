@@ -325,5 +325,82 @@ f1.writelines(["1\n", "2\n", "3\n"])
 # socket。网络IO
 
 ## c++
+参考连接[https://www.cnblogs.com/kefeiGame/p/7246942.html](https://www.cnblogs.com/kefeiGame/p/7246942.html)
+```C++
+#include <string.h>
+
+#include <sys/socket.h>
+
+#include <sys/types.h>
+
+#define MYPORT 3490 /*用户接入端口*/
+
+#define BACKLOG 10 /* 多少等待连接控制*/
+
+main()
+
+{
+
+　　int sockfd, new_fd; /* listen on sock_fd, new connection on new_fd */
+
+　　struct sockaddr_in my_addr; /* 地址信息 */
+
+　　struct sockaddr_in their_addr; /* connector's address information */
+
+　　int sin_size;
+
+　　sockfd = socket(AF_INET, SOCK_STREAM, 0); /* 错误检查*/
+
+　　my_addr.sin_family = AF_INET; /* host byte order */
+
+　　my_addr.sin_port = htons(MYPORT); /* short, network byte order */
+
+　　my_addr.sin_addr.s_addr = INADDR_ANY; /* auto-fill with my IP */
+
+　　bzero(&(my_addr.sin_zero),; /* zero the rest of the struct */
+
+　　/* don't forget your error checking for these calls: */
+
+　　bind(sockfd, (struct sockaddr *)&my_addr, sizeof(struct sockaddr));
+
+　　listen(sockfd, BACKLOG);
+
+　　sin_size = sizeof(struct sockaddr_in);
+
+　　new_fd = accept(sockfd, &their_addr, &sin_size);
+  ....
+```
+### send 和 recv
+这两个函数用于流式套接字或者数据报套接字的通讯。(SOCK_STREAM/SOCK_DGRAM)
+```C++
+char *msg = "Beej was here!";
+
+int len, bytes_sent;
+
+……
+
+len = strlen(msg);
+
+bytes_sent = send(sockfd, msg, len, 0);
+```
+send() 返回实际发送的数据的字节数--它可能小于你要求发送的数 目！ 注意，有时候你告诉它要发送一堆数据可是它不能处理成功。它只是 发送它可能发送的数据，然后希望你能够发送其它的数据。记住，如果 send() 返回的数据和 len 不匹配，你就应该发送其它的数据。但是这里也 有个好消息：如果你要发送的包很小(小于大约 1K)，它可能处理让数据一 次发送完。最后要说得就是，它在错误的时候返回-1，并设置 errno
+
+int recv(int sockfd, void *buf, int len, unsigned int flags);
+
+sockfd 是要读的套接字描述符。buf 是要读的信息的缓冲。len 是缓 冲的最大长度。flags 可以设置为0。(请参考recv() 的 man page。) recv() 返回实际读入缓冲的数据的字节数。或者在错误的时候返回-1， 同时设置 errno。
+
+### sendto() 和 recvfrom()函数
+ to 是个指向数据结构 struct sockaddr 的指针，它包含了目的地的 IP 地址和端口信息。tolen 可以简单地设置为 sizeof(struct sockaddr)。 和函数 send() 类似，sendto() 返回实际发送的字节数(它也可能小于 你想要发送的字节数！)，或者在错误的时候返回 -1。
+ ```C++
+ //你已经看到了，除了另外的两个信息外，其余的和函数 send() 是一样 的。 to 是个指向数据结构 struct sockaddr 的指针，它包含了目的地的 IP 地址和端口信息。tolen 可以简单地设置为 sizeof(struct sockaddr)。 和函数 send() 类似，sendto() 返回实际发送的字节数(它也可能小于 你想要发送的字节数！)，或者在错误的时候返回 -1。
+ int sendto(int sockfd, const void *msg, int len, unsigned int flags, const struct sockaddr *to, int tolen);
+ 
+ //又一次，除了两个增加的参数外，这个函数和 recv() 也是一样的。from 是一个指向局部数据结构 struct sockaddr 的指针，它的内容是源机器的 IP 地址和端口信息。fromlen 是个 int 型的局部指针，它的初始值为 sizeof(struct sockaddr)。函数调用返回后，fromlen 保存着实际储存在 from 中的地址的长度。
+
+//recvfrom() 返回收到的字节长度，或者在发生错误后返回 -1。
+ int recvfrom(int sockfd, void *buf, int len, unsigned int flags, struct sockaddr *from, int *fromlen);
+ ```
+ 记住，如果你用 connect() 连接一个数据报套接字，你可以简单的调 用 send() 和 recv() 来满足你的要求。这个时候依然是数据报套接字，依 然使用 UDP，系统套接字接口会为你自动加上了目标和源的信息。
+ 
 
 ## python 
