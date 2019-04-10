@@ -125,6 +125,16 @@ if(fd!=-1)
             }
 
 ```
+## windows
+```C++
+BOOL WINAPI LockFile(
+_In_ HANDLE hFile,
+_In_ DWORD dwFileOffsetLow,
+_In_ DWORD dwFileOffsetHigh,
+_In_ DWORD nNumberOfBytesToLockLow,
+_In_ DWORD nNumberOfBytesToLockHigh
+);
+```
 # 父子进程的关系
 # 进行收到信号的行为
 # 进程间通信
