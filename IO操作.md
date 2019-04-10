@@ -87,6 +87,24 @@ streamoff定义于 iostream.h 中，定义有偏移量 offset 所能取得的最
 　　file1.seekg(1234,ios::cur); //把文件的读指针从当前位置向后移1234个字节
 　　file2.seekp(1234,ios::beg); //把文件的写指针从文件开头向后移1234个字节
 ```
+## python 
+关于open()的mode参数：
+
+'r'：读
+
+'w'：写
+
+'a'：追加
+
+'r+' == r+w（可读可写，文件若不存在就报错(IOError)）
+
+'w+' == w+r（可读可写，文件若不存在就创建）
+
+'a+' ==a+r（可追加可写，文件若不存在就创建）
+
+对应的，如果是二进制文件，就都加一个b就好啦：
+
+'rb'　　'wb'　　'ab'　　'rb+'　　'wb+'　　'ab+
 
 ## 读文件
 ### c++
@@ -203,7 +221,26 @@ cout<<n[0]<<" ";
 }
 ```
 ### python 
-
+ - read()
+ 	
+	 每次读取整个文件，它通常用于将文件内容放到一个字符串变量中。如果文件大于可用内存，为了保险起见，可以反复调用read(size)方法，每次最多读取size个字节的内容。
+ - readline() 
+ 
+ 	每次只读取一行，通常比readlines() 慢得多。仅当没有足够内存可以一次读取整个文件时，才应该使用 readline()。
+ - readlines()
+ 
+ 	之间的差异是后者一次读取整个文件，象 .read() 一样。.readlines() 自动将文件内容分析成一个行的列表，该列表可以由 Python 的 for ... in ... 结构进行处理。
+```python
+try:
+    f = open('/path/to/file', 'r')
+    print(f.read())
+finally:
+    if f:
+        f.close()
+//-------------------------
+with open('/path/to/file', 'r') as f:
+    print(f.read())
+```
 ## 写文件
 
 ### c++
@@ -248,7 +285,26 @@ outfile.write((Char*)n,sizeof(int)); //还可以用变量和数组为例
 outfile.close();
 ```
 ### python
+```python
+>>> f = open('test.txt', 'w') # 若是'wb'就表示写二进制文件
+>>> f.write('Hello, world!')
+>>> f.close()
 
+
+with open('test.txt', 'w') as f:
+    f.write('Hello, world!')
+    
+f1 = open('test1.txt', 'w')
+f1.writelines(["1", "2", "3"])
+#    此时test1.txt的内容为:123
+
+f1 = open('test1.txt', 'w')
+f1.writelines(["1\n", "2\n", "3\n"])
+#    此时test1.txt的内容为:
+#    1
+#    2        
+#    3
+```
 # socket。网络IO
 
 ## c++
