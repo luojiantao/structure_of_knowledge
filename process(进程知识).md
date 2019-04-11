@@ -217,7 +217,40 @@ _In_ DWORD nNumberOfBytesToLockHigh
 父子进程间遵循**读时共享写时复制**的原则，这是为了节省内存。  
 父子进程共享：文件描述符，mmap的映射区。
 ## fork
+[https://www.cnblogs.com/chris-cp/p/3525070.html](https://www.cnblogs.com/chris-cp/p/3525070.html)
+
 fork函数返回类型为pid_t，实质为unsigned int，而且有两次返回，一次返回子进程ID给父进程，一次返回0给子进程。
+```C++
+#include　<unistd.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
+
+char command[256];
+int main()
+{
+    int rtn;
+    printf(">>");
+    
+    fgets(command, 256, stdin);
+    command[strlen(command)-1] = 0;
+    if(fork()==0) //子进程
+    {
+        execlp(command, NULL);
+        perror(command);
+        exit(errno);
+    }    
+    else  //父进程
+    {
+        wait(&rtn);
+        printf("child process return %d\n", rtn);
+    }    
+    
+    return 0;
+}
+```
 # 进行收到信号的行为
 # 进程间通信
 ## 信息量
