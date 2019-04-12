@@ -31,10 +31,12 @@
 
 有两个信号可以停止进程:SIGTERM和SIGKILL。 SIGTERM比较友好，进程能捕捉这个信号，根据您的需要来关闭程序。在关闭程序之前，您可以结束打开的记录文件和完成正在做的任务。在某些情况下，假 如进程正在进行作业而且不能中断，那么进程可以忽略这个SIGTERM信号。
 
-对于SIGKILL信号，进程是不能忽略的。这是一个 “我不管您在做什么,立刻停止”的信号。假如您发送SIGKILL信号给进程，Linux就将进程停止在那里
-信号| 名字|  描述|进程行为
--|-|-
-SIGHUP	|1	|Hangup (POSIX)；挂断|终止进程
+对于SIGKILL信号，进程是不能忽略的。这是一个 “我不管您在做什么,立刻停止”的信号。假如您发送SIGKILL信号给进程，Linux就将进程停止在那里    
+
+
+|信号|名字|描述|进程行为|   
+|------|---|---------|-----|    
+|SIGHUP	|1	|Hangup (POSIX)；挂断|终止进程|  
 SIGINT	|2	|Terminal interrupt (ANSI)；终端终端|终止进程
 SIGQUIT|	3	|Terminal quit (POSIX)；终端退出|终止进程，并且生成core文件
 SIGILL|	4	|Illegal instruction (ANSI)；非法指令|建立CORE文件
