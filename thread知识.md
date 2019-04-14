@@ -52,7 +52,21 @@ thread t3(move(t1));
 ```C++
 std::future<typename std::result_of<Function(Args...)>::type> = async( std::launch policy, Function&& f, Args&&... args );
 ```
-std::launch policy有两个，一个是调用即创建线程（std::launch::async），**一个是延迟加载方式创建线程（std::launch::deferred），当掉使用async时不创建线程，直到调用了future的get或者wait时才创建线程**。之后是线程函数和线程参数。
+std::launch policy有两个，
+​    1. （std::launch::async），调用即创建线程，std::launch::async当返回的future失效前会强制执行task，即不调用future.get也会保证task的执行
+​    2. （std::launch::deferred），**延迟加载方式创建线程，当掉使用async时不创建线程，直到调用了future的get或者wait时才创建线程**。
+f:线程函数  
+args:线程参数。
+
+### 注意点
+注意第三条：在以下三个条件全部满足时future析构可能阻塞
+
+（1）共享状态是由调用std::async时创建的
+
+（2）共享状态还不是ready状态
+
+（3）被析构的当前对象持有着对共享状态的最后一个引用
+可以使用std::packaged_task和std::thread避免这个问题
 ### demo
 ```C++
 #include "stdafx.h"
