@@ -153,3 +153,51 @@ cond(yes)->op2->op3->op0
 ```
 
 ```
+
+## 条件变量std::condition_variable
+- 参考链接  
+	![https://www.jianshu.com/p/a31d4fb5594f](https://www.jianshu.com/p/a31d4fb5594f)	
+- 头文件
+	#include <condition_variable>  // std::condition_variable
+	#include <mutex>               // std::mutex
+### 成员函数
+
+1. wait  
+	wait是线程的等待动作，直到其它线程将其唤醒后，才会继续往下执行。下面通过伪代
+	```C++
+	std::mutex mutex;
+	std::condition_variable cv;
+
+	// 条件变量与临界区有关，用来获取和释放一个锁，因此通常会和mutex联用。
+	std::unique_lock lock(mutex);
+	// 此处会释放lock，然后在cv上等待，直到其它线程通过cv.notify_xxx来唤醒当前线程，cv被唤醒后会再次对lock进行上锁，然后wait函数才会返回。
+	// wait返回后可以安全的使用mutex保护的临界区内的数据。此时mutex仍为上锁状态
+	cv.wait(lock)
+	```
+	- 注意点  
+		**wait有时会在没有任何线程调用notify的情况下返回**.这种情况就是有名的spurious wakeup。因此当wait返回时，你需要再次检查wait的前置条件是否满足，如果不满足则需要再次wait。wait提供了重载的版本，用于提供前置检查。
+		```C++
+		template <typename Predicate>
+		void wait(unique_lock<mutex> &lock, Predicate pred) {
+		    while(!pred()) {
+			wait(lock);
+		    }
+		}
+		```
+2. wait_for  
+	等待指定时长
+3. wait_until    
+	等待到指定的时间
+
+4. notify_one  
+	唤醒等待的一个线程，注意只唤醒一个。
+5. notify_all  
+	唤醒所有等待的线程。使用该函数时应避免出现惊群效应。
+	```C++
+	std::mutex mutex;
+	std::condition_variable cv;
+
+	std::unique_lock lock(mutex);
+	// 所有等待在cv变量上的线程都会被唤醒。但直到lock释放了mutex，被唤醒的线程才会从wait返回。
+	cv.notify_all(lock)
+	```
