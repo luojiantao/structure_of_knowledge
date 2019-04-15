@@ -76,6 +76,14 @@ SIGPWR	|30|Power failure restart (System V)；电力故障|进程终止
 父子进程的不同之处：进程PID，PPID，fork返回值，进程运行时间，定时器。
 父子进程间遵循**读时共享写时复制**的原则，这是为了节省内存。  
 父子进程共享：文件描述符，mmap的映射区。
+## 惊群效应
+[https://blog.csdn.net/lyztyycode/article/details/78648798?locationNum=6&fps=1](https://blog.csdn.net/lyztyycode/article/details/78648798?locationNum=6&fps=1)
+1) accept 惊群效应  
+主进程创建了socket、bind、listen之后，fork()出来多个进程，每个子进程都开始循环处理（accept）这个listen_fd。每个进程都阻塞在accept上，当一个新的连接到来时候，所有的进程都会被唤醒，但是其中只有一个进程会接受成功，其余皆失败，重新休眠。  
+历史上，Linux的accpet确实存在惊群问题，但现在的内核都解决该问题了。即，当多个进程/线程都阻塞在对同一个socket的接受调用上时，当有一个新的连接到来，内核只会唤醒一个进程，其他进程保持休眠，压根就不会被唤醒。
+2）epoll 惊群  
+没有被优化
+
 ## fork
 [https://www.cnblogs.com/chris-cp/p/3525070.html](https://www.cnblogs.com/chris-cp/p/3525070.html)
 
