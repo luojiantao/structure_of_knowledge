@@ -114,17 +114,17 @@ future_status有三种状态：
 	- timeout：异步操作超时
 	```C++
 	//查询future的状态
-std::future_status status;
-    do {
-        status = future.wait_for(std::chrono::seconds(1));
-        if (status == std::future_status::deferred) {
-            std::cout << "deferred\n";
-        } else if (status == std::future_status::timeout) {
-            std::cout << "timeout\n";
-        } else if (status == std::future_status::ready) {
-            std::cout << "ready!\n";
-        }
-    } while (status != std::future_status::ready); 
+	std::future_status status;
+	    do {
+		status = future.wait_for(std::chrono::seconds(1));
+		if (status == std::future_status::deferred) {
+		    std::cout << "deferred\n";
+		} else if (status == std::future_status::timeout) {
+		    std::cout << "timeout\n";
+		} else if (status == std::future_status::ready) {
+		    std::cout << "ready!\n";
+		}
+	    } while (status != std::future_status::ready); 
 	```
 	获取future结果有三种方式：get、wait、wait_for，其中get等待异步操作结束并返回结果，wait只是等待异步操作完成，没有返回值，wait_for是超时等待返回结果
 ### std::promise
