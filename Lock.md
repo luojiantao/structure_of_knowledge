@@ -1,3 +1,7 @@
+# lock-free 特性
+一个“锁无关”的程序能够确保执行它的所有线程中至少有一个能够继续往下执行
+## 参考链接
+[http://www.cppblog.com/mysileng/archive/2014/09/03/208222.html](http://www.cppblog.com/mysileng/archive/2014/09/03/208222.html)
 # C++11
 ## 互斥锁
 C++11中新增了<mutex>，它是C++标准程序库中的一个头文件，定义了C++11标准中的一些互斥访问的类与方法等。其中std::mutex就是lock、unlock。std::lock_guard与std::mutex配合使用，把锁放到lock_guard中时，mutex自动上锁，lock_guard析构时，同时把mutex解锁。mutex又称互斥量
@@ -43,6 +47,9 @@ std::unique_lock 与std::lock_guard都能实现自动加锁与解锁功能，但
 
 ## 原子操作类 Atomic
 
+### 参考链接
+[https://www.cnblogs.com/haippy/archive/2013/09/05/3301408.html](https://www.cnblogs.com/haippy/archive/2013/09/05/3301408.html)
+### 简单说明
 它们提供的方法能保证具有原子性。这些方法是不可再分的，获取这些变量的值时，永远获得修改前的值或修改后的值，不会获得修改过程中的中间数值。
 
 1. atomic_flag
@@ -193,12 +200,13 @@ cond(yes)->op2->op3->op0
 4. notify_one  
 	唤醒等待的一个线程，注意只唤醒一个。
 5. notify_all  
-	唤醒所有等待的线程。使用该函数时应避免出现惊群效应。
-	```C++
-	std::mutex mutex;
-	std::condition_variable cv;
+  唤醒所有等待的线程。使用该函数时应避免出现惊群效应。
 
-	std::unique_lock lock(mutex);
-	// 所有等待在cv变量上的线程都会被唤醒。但直到lock释放了mutex，被唤醒的线程才会从wait返回。
-	cv.notify_all(lock)
-	```
+  ```C++
+  std::mutex mutex;
+  std::condition_variable cv;
+  
+  std::unique_lock lock(mutex);
+  // 所有等待在cv变量上的线程都会被唤醒。但直到lock释放了mutex，被唤醒的线程才会从wait返回。
+  cv.notify_all(lock)
+  ```
