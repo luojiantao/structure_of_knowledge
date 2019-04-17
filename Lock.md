@@ -2,6 +2,39 @@
 一个“锁无关”的程序能够确保执行它的所有线程中至少有一个能够继续往下执行
 ## 参考链接
 [http://www.cppblog.com/mysileng/archive/2014/09/03/208222.html](http://www.cppblog.com/mysileng/archive/2014/09/03/208222.html)
+```C++
+template <typename T>
+class LockFreeQueue {
+private:
+  struct Node {
+    Node( T val ) : value(val), next(nullptr) { }
+    T value;
+    Node* next;
+  };
+  Node* first;             // for producer only
+  atomic<Node*> divider, last;         // shared
+
+void Produce( const T& t ) {
+  last->next = new Node(t);    // add the new item
+      last  = last->next;      // publish it
+  while( first != divider ) { // trim unused nodes
+    Node* tmp = first;
+    first = first->next;
+    delete tmp;
+  }
+}
+
+
+  bool Consume( T& result ) {
+    if( divider != last ) {         // if queue is nonempty
+      result = divider->next->value;  // C: copy it back
+      divider = divider->next;   // D: publish that we took it
+      return true;              // and report success
+    }
+    return false;               // else report empty
+  }
+};
+```
 # C++11
 ## 互斥锁
 C++11中新增了<mutex>，它是C++标准程序库中的一个头文件，定义了C++11标准中的一些互斥访问的类与方法等。其中std::mutex就是lock、unlock。std::lock_guard与std::mutex配合使用，把锁放到lock_guard中时，mutex自动上锁，lock_guard析构时，同时把mutex解锁。mutex又称互斥量
