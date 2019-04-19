@@ -22,6 +22,7 @@
 2. 在离开‘}’时，按照清理栈变量规则回收资源
 3. 因为std::function 是一个类所以有如下
 ```c++
+//通常使用没有捕获的lamba，构造std::function,那么这个std::function占一个字节大小（空类）
 new std::function
 ```
   
