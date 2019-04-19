@@ -73,7 +73,7 @@ std::mutex mut;
 }
  
 {
-       std::unqiue_lock<std::mutex> lk(mut);
+       std::unique_lock<std::mutex> lk(mut);
 }
 ```
 std::unique_lock 与std::lock_guard都能实现自动加锁与解锁功能，但是std::unique_lock要比std::lock_guard更灵活，但是更灵活的代价是占用空间相对更大一点且相对更慢一点。
