@@ -226,7 +226,7 @@ cond(yes)->op2->op3->op0
 		```
 		如果这个pred函数返回的是true，wait()函数不会阻塞会直接返回，如果这个函数返回的是false，wait()函数就会阻塞着等待唤醒，如果被伪唤醒，会继续判断函数返回值。
 2. wait_for  
-	等待指定时长
+	等待指定时长,cv.wait_for(lck,std::chrono::seconds(1)
 3. wait_until    
 	等待到指定的时间
 
