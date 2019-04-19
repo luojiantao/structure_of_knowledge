@@ -31,3 +31,36 @@ new std::function
 ```C++
 
 ```
+
+## 内存屏障
+
+通过函数封装可以实现简单的内存屏障。（防止编译器优化）
+
+```C++
+struct test{
+test();
+test(int a1, int b1):a(a1),b(b1)
+int a;
+int b = ;
+};
+test *g = NULL;
+test* g2 = NULL
+//由于编译器优化可能在函数,使
+//g2 = g,先于g,a=1; g.b = 2; 执行
+//多线程环境下，其他线程获取g2,访问属性a,b得不到预期值。
+void fun_a(){
+    g = new test();
+    g.a = 1;
+    g.b = 2;
+    g2 = g;
+}
+//-------------------------
+//修改如下
+
+void fun_a(){
+    //依靠类的初始化机制实现简单的内存屏障
+    g = new test(1， 2);
+    g2 = g;
+}
+```
+
