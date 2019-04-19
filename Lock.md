@@ -243,7 +243,7 @@ cond(yes)->op2->op3->op0
   std::mutex mutex;
   std::condition_variable cv;
   
-  std::unique_lock lock(mutex);
+  std::unique_lock<std::mutex> lock(mutex);
   // 所有等待在cv变量上的线程都会被唤醒。但直到lock释放了mutex，被唤醒的线程才会从wait返回。
   cv.notify_all(lock)
   ```
