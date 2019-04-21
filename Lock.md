@@ -73,7 +73,7 @@ std::mutex mut;
 }
  
 {
-       std::unqiue_lock<std::mutex> lk(mut);
+       std::unique_lock<std::mutex> lk(mut);
 }
 ```
 std::unique_lock 与std::lock_guard都能实现自动加锁与解锁功能，但是std::unique_lock要比std::lock_guard更灵活，但是更灵活的代价是占用空间相对更大一点且相对更慢一点。
@@ -227,6 +227,10 @@ cond(yes)->op2->op3->op0
 		如果这个pred函数返回的是true，wait()函数不会阻塞会直接返回，如果这个函数返回的是false，wait()函数就会阻塞着等待唤醒，如果被伪唤醒，会继续判断函数返回值。
 2. wait_for  
 	等待指定时长
+	```C++
+	#include <chrono>
+	cv.wait_for(lck,std::chrono::seconds(1);
+	```
 3. wait_until    
 	等待到指定的时间
 
@@ -239,7 +243,7 @@ cond(yes)->op2->op3->op0
   std::mutex mutex;
   std::condition_variable cv;
   
-  std::unique_lock lock(mutex);
+  std::unique_lock<std::mutex> lock(mutex);
   // 所有等待在cv变量上的线程都会被唤醒。但直到lock释放了mutex，被唤醒的线程才会从wait返回。
   cv.notify_all(lock)
   ```
