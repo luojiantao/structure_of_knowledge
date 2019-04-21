@@ -85,8 +85,14 @@ private:
     void init();
     Type m_type;
     Priority m_pri;
-    std::atomic<Node*> m_head;
+    //std::atomic<Node*> m_head;
     std::atomic<Node*> m_tail;
+    struct Head{
+        std::atomic<Node*> head;
+        std::atomic<int> count;
+    };
+
+    Head m_head1;
     //Node* m_Eof;
 };
 

@@ -50,7 +50,8 @@ void ThreadPoolDemo::CPriqueue::push_back(std::function<void()> task){
 }
 
 bool ThreadPoolDemo::CPriqueue::pop_front(std::function<void()>& task){
-    Node* oldhead = m_head;//内存引用计数加一
+    Node* oldhead = m_head;//内存引用计数加一,通过hash_map
+    //oldhead = share_ref.get();
     do{
         //oldhead = m_head;
 	if(oldhead->next == nullptr){
@@ -61,6 +62,24 @@ bool ThreadPoolDemo::CPriqueue::pop_front(std::function<void()>& task){
 		lflag += 1;
     oldhead->next.load()->load(task);
     //delete oldhead;//TODO,内存引用计数，内存引用计数减一
+    return true;
+}
+
+bool ThreadPoolDemo::CPriqueue::pop_front1(std::function<void()>& task){
+    Node* oldhead = m_head1.head;//内存引用计数加一,通过hash_map
+    head1.count += 1;
+    //oldhead = share_ref.get();
+    do{
+        //oldhead = m_head;
+    if(oldhead->next == nullptr){
+        lflag1 +=1;
+        return false;
+    }
+    }while(!m_head.compare_exchange_weak(oldhead, oldhead->next));
+        lflag += 1;
+    oldhead->next.load()->load(task);
+    //delete oldhead;//TODO,内存引用计数，内存引用计数减一
+    m_head1.delete();
     return true;
 }
 /*
