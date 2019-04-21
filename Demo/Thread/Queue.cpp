@@ -60,7 +60,7 @@ bool ThreadPoolDemo::CPriqueue::pop_front(std::function<void()>& task){
     }while(!m_head.compare_exchange_weak(oldhead, oldhead->next));
 		lflag += 1;
     oldhead->next.load()->load(task);
-    delete oldhead;//TODO,内存引用计数，内存引用计数减一
+    //delete oldhead;//TODO,内存引用计数，内存引用计数减一
     return true;
 }
 /*
