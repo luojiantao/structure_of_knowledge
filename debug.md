@@ -8,6 +8,7 @@
  ## 安装
   1. 安装libunwind 
   wget http://download.savannah.gnu.org/releases/libunwind/libunwind-0.99-beta.tar.gz
+  ubuntu apt-get install libunwind8-dev
   2. 安装google-perfile
   wget https://github.com/gperftools/gperftools/releases/download/gperftools-2.5/gperftools-2.5.tar.gz
   
