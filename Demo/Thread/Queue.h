@@ -38,6 +38,7 @@ struct Node{
     void load(std::function<void()>& func){
         //std::unique_lock<std::mutex> lk(m_mtx);
 	func = task; 
+	//func = [](){}; 
     }
     void link_tail(Node* n){
         next = n;
@@ -46,8 +47,8 @@ struct Node{
 	//next = nullptr;
     }
     std::function<void()> task;
-    Node* next;
-    //std::atomic<Node*> next; 
+    //Node* next;
+    std::atomic<Node*> next; 
     int value = 0;
     //std::atomic_flag// TODO
     std::mutex m_mtx;

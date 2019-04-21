@@ -2,66 +2,64 @@
 static std::atomic<int> lflag(0);
 static std::atomic<int> lflag1(0);
 void ThreadPoolDemo::CPriqueue::push_back(std::function<void()> task){
-    Node* oldtail = m_tail;
     Node* newNode = new Node(task);
     //newNode->next = nullptr;
     if(newNode == 0){
 	std::cout << "new error" <<std::endl;
         return;
     }
-    
-    while(!m_tail.compare_exchange_weak(oldtail, newNode)){
-	 std::this_thread::yield();
-        // usleep(10);
+    Node* oldtail = m_tail;
+    Node* temp = nullptr;
+    {
+	bool iff = true;
+        do{
+	    if (!iff){
+	        std::this_thread::yield();
+	    }else{
+	        iff = false;
+	    }
+	    //Node* oldtail = m_tail;
+	    while(oldtail->next != nullptr){
+	        //oldtail = oldtail->next;
+                oldtail = m_tail;
+	    }
+	    temp = nullptr;
+	}while(!oldtail->next.compare_exchange_weak(temp, newNode));
+
+	m_tail.compare_exchange_strong(oldtail, newNode);
     }
-    //oldtail->next = newNode;
-    oldtail->link_tail(newNode);
+
+    {
+	    /*
+        while(!m_tail.compare_exchange_weak(oldtail, newNode)){
+	    std::this_thread::yield();
+	}
+
+	oldtail->next = newNode;
+        */
+	/*
+	Node* temp = nullptr;
+	while(!oldtail->next.compare_exchange_weak(temp, newNode)){
+	    std::this_thread::yield();
+	    temp = nullptr;
+	    oldtail = m_tail;
+	}
+        m_tail.compare_exchange_strong(oldtail, newNode);*/
+    }
     return;
-    //lazy clear
-    /*while( m_Eof != m_head){
-        Node* tmp = m_Eof;
-	m_Eof = m_Eof->next;
-	delete tmp;
-    }*/
 }
 
 bool ThreadPoolDemo::CPriqueue::pop_front(std::function<void()>& task){
-    //判断节点是否指向Eof
-    //YES,m_head = m_Eof->next
-    //NO, flag = m_head 不处理
-   if( m_head == m_tail){
-       lflag1 += 1;
-       return false;
-   }
-     
-    Node* oldhead = m_head;
-    while(oldhead->next == nullptr){
-            lflag +=1;
-	    //usleep(100);
-	    std::this_thread::yield();
-    }
-    //Node* newhead = oldhead->next;
-    //CAS:if m_head == oldhead, then m_head = newhead
-    while(!m_head.compare_exchange_weak(oldhead, oldhead->next)){
-     while(oldhead->next == nullptr){
-	     std::this_thread::yield();
-     }
-	     std::this_thread::yield();
-    }
-    while(true){
-        //oldhead->next.load()->load(task);
-        oldhead->next->load(task);
-        if(task){
-	    break;
-	}else{
-	    //std::cout << "luo" << std::endl;
-            std::this_thread::yield();
-	    continue;
+    Node* oldhead = nullptr;
+    do{
+        oldhead = m_head;
+	if(oldhead->next == nullptr){
+	    lflag1 +=1;
+	    return false;
 	}
-	//usleep(100);
-    }
-    
-    delete oldhead;  // 需要修改
+    }while(!m_head.compare_exchange_weak(oldhead, oldhead->next));
+		lflag += 1;
+    oldhead->next.load()->load(task);
     return true;
 }
 /*
@@ -122,7 +120,7 @@ void ThreadPoolDemo::CPriqueue::print(){
 }
 
 bool ThreadPoolDemo::CPriqueue::empty(){
-    return (m_head == m_tail);
+    return (m_head.load()->next == nullptr);
 }
 
 void ThreadPoolDemo::CPriqueue::init(){
