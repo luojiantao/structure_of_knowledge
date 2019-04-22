@@ -15,11 +15,9 @@ set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
 include_directories(
         ${PROJECT_SOURCE_DIR}/include
-        ${PROJECT_SOURCE_DIR}/ThreadDemo/Task
-        ${PROJECT_SOURCE_DIR}/ThreadDemo/Queue
-        ${PROJECT_SOURCE_DIR}/ThreadDemo/ThreadPool
+        ${PROJECT_SOURCE_DIR}/Thread
         )
 
-add_executable(hello_world ThreadDemo/demo.cpp ThreadDemo/Queue/Queue.cpp)
+add_executable(hello_world Threaddemo.cpp Thread/Queue.cpp)
 #target_link_libraries(hello_world pthread)
 target_link_libraries(hello_world profiler tcmalloc pthread)
