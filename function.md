@@ -25,7 +25,7 @@
 //通常使用没有捕获的lamba，构造std::function,那么这个std::function占一个字节大小（空类）
 new std::function
 ```
-  
+
 ### 例子解释
 
 ```C++
@@ -63,4 +63,5 @@ void fun_a(){
     g2 = g;
 }
 ```
+# std::function
 
