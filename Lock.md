@@ -2,6 +2,7 @@
 一个“锁无关”的程序能够确保执行它的所有线程中至少有一个能够继续往下执行
 ## 参考链接
 [http://www.cppblog.com/mysileng/archive/2014/09/03/208222.html](http://www.cppblog.com/mysileng/archive/2014/09/03/208222.html)
+[https://www.boost.org/doc/libs/1_55_0/boost/lockfree/queue.hpp](https://www.boost.org/doc/libs/1_55_0/boost/lockfree/queue.hpp)
 ```C++
 template <typename T>
 class LockFreeQueue {
@@ -34,6 +35,56 @@ void Produce( const T& t ) {
     return false;               // else report empty
   }
 };
+```
+```C++
+ /** Pops object from queue.
+     *
+     * \pre type U must be constructible by T and copyable, or T must be convertible to U
+     * \post if pop operation is successful, object will be copied to ret.
+     * \returns true, if the pop operation is successful, false if queue was empty.
+     *
+     * \note Thread-safe and non-blocking
+     * */
+    template <typename U>
+    bool pop (U & ret)
+    {
+        using detail::likely;
+        for (;;) {
+            tagged_node_handle head = head_.load(memory_order_acquire);
+            node * head_ptr = pool.get_pointer(head);
+
+            tagged_node_handle tail = tail_.load(memory_order_acquire);
+            tagged_node_handle next = head_ptr->next.load(memory_order_acquire);
+            node * next_ptr = pool.get_pointer(next);
+
+            tagged_node_handle head2 = head_.load(memory_order_acquire);
+            if (likely(head == head2)) {
+                if (pool.get_handle(head) == pool.get_handle(tail)) {
+                    if (next_ptr == 0)
+                        return false;
+
+                    tagged_node_handle new_tail(pool.get_handle(next), tail.get_next_tag());
+                    tail_.compare_exchange_strong(tail, new_tail);
+
+                } else {
+                    if (next_ptr == 0)
+                        /* this check is not part of the original algorithm as published by michael and scott
+                         *
+                         * however we reuse the tagged_ptr part for the freelist and clear the next part during node
+                         * allocation. we can observe a null-pointer here.
+                         * */
+                        continue;
+                    detail::copy_payload(next_ptr->data, ret);
+
+                    tagged_node_handle new_head(pool.get_handle(next), head.get_next_tag());
+                    if (head_.compare_exchange_weak(head, new_head)) {
+                        pool.template destruct<true>(head);
+                        return true;
+                    }
+                }
+            }
+        }
+    }
 ```
 # C++11
 ## 互斥锁
