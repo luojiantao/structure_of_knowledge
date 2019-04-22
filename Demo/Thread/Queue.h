@@ -55,6 +55,11 @@ struct Node{
     char mm[100];
 };
 
+class CNodeLink{
+private:
+    Node* m_node;
+    Node* m_next;
+};
 class CPriqueue{
 public:
     CPriqueue(){
