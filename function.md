@@ -64,4 +64,39 @@ void fun_a(){
 }
 ```
 # std::function
+通过std::function对C++中各种可调用实体（普通函数、Lambda表达式、函数指针、以及其它函数对象等）的封装，形成一个新的可调用的std::function对象；让我们不再纠结那么多的可调用实体。一切变的简单粗暴。
 
+## 参考链接
+[https://zh.cppreference.com/w/cpp/utility/functional/function/function](https://zh.cppreference.com/w/cpp/utility/functional/function/function)
+
+## std::placeholders 占位符
+
+```C++
+namespace placeholders {
+  extern /* unspecified */ _1;
+  extern /* unspecified */ _2;
+  extern /* unspecified */ _3;
+  // ...
+}
+```
+其中_1, _2, _3是未指定的数字对象，用于function的bind中。 _1用于代替回调函数中的第一个参数， _2用于代替回调函数中的第二个参数，以此类推.
+### 参考链接
+https://blog.csdn.net/nanjiye/article/details/52164279
+### example
+```C++
+ExampleFunction f = std::bind(&Object::hello, &instance, std::placeholders::_1);
+```
+1. std::is_placeholder  
+	std::is_placeholder 用于判断T是否为占位符，它有一个成员变量value。如果T是placeholder类型，value的值为1代表 _1，2代表 _2；如果T不是，则value为0
+2. std::is_bind_expression   
+  判断是否是bind表达式，有value成员，返回值是true或false
+## example
+```C++
+#include <functional>
+
+// 类成员函数
+TestClass testObj;
+Functional = std::bind(&TestClass::ClassMember, testObj, std::placeholders::_1);
+result = Functional(40);
+```
+- std::function对象最大的用处就是在实现函数回调，使用者需要注意，它不能被用来检查相等或者不相等，但是可以与NULL或者nullptr进行比较。
