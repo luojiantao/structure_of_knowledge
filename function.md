@@ -1,5 +1,12 @@
 # lambda
 ## c++
+```C++
+int a;
+int b;
+auto f0 = [](){}//1
+auto f = [a](){};//大小为4
+auto f2 = [a, b](){}//8
+```
 ### 内存模型
 - 问题： 没有捕获的匿名函数和C调用很相似。
 
@@ -68,6 +75,14 @@ void fun_a(){
 
 ## 参考链接
 [https://zh.cppreference.com/w/cpp/utility/functional/function/function](https://zh.cppreference.com/w/cpp/utility/functional/function/function)
+
+## 理解
+- 是一个类对象
+- 重载了()操作符
+- 64位，机器下固定大小为32 TODO
+```C++
+
+```
 
 ## std::placeholders 占位符
 
