@@ -34,38 +34,38 @@
 对于SIGKILL信号，进程是不能忽略的。这是一个 “我不管您在做什么,立刻停止”的信号。假如您发送SIGKILL信号给进程，Linux就将进程停止在那里    
 
 
-|信号|名字|描述|进程行为|   
-|------|---|---------|-----|    
-|SIGHUP	|1	|Hangup (POSIX)；挂断|终止进程|  
-SIGINT	|2	|Terminal interrupt (ANSI)；终端终端|终止进程
-SIGQUIT|	3	|Terminal quit (POSIX)；终端退出|终止进程，并且生成core文件
-SIGILL|	4	|Illegal instruction (ANSI)；非法指令|建立CORE文件
-SIGTRAP|	5|	Trace trap (POSIX)；跟踪自陷|建立CORE文件
-SIGIOT	|6|	IOT Trap (4.2 BSD)；执行I/O自陷|建立CORE文件
-SIGBUS	|7	|BUS error (4.2 BSD)；总线错误|建立CORE文件
-SIGFPE|	8	|Floating point exception (ANSI)；浮点异常|建立CORE文件
-SIGKILL	|9	|Kill(can't be caught or ignored) (POSIX)；杀死进程|终止进程
-SIGUSR1	|10	|User defined signal 1 (POSIX)；用户定义信号1|终止进程
-SIGSEGV	|11	|Invalid memory segment access (ANSI)；段非法错误|建立CORE文件
-SIGUSR2	|12|User defined signal 2 (POSIX)；用户定义信号2|终止进程
-SIGPIPE	|13	|Write on a pipe with no reader, Broken pipe (POSIX)；向一个没有读进程的管道写数据|终止进程
-SIGALRM	|14|Alarm clock (POSIX)；定时时钟|缺省的动作就是终止当前进程
-SIGTERM	|15|Termination (ANSI)终止|进程终止
-SIGSTKFLT	|16|Stack fault；协处理器堆栈错误|进程终止
-SIGCHLD	|17|Child process has stopped or exited, changed (POSIX)；子进程结束时, 父进程会收到这个信号|忽略
-SIGCONTv |18|Continue executing, if stopped (POSIX)；让一个停止(stopped)的进程继续执行|忽略，不能被阻塞
-SIGSTOP	|19|	Stop executing(can't be caught or ignored) (POSIX)；停止一个进程|注意它和terminate以及interrupt的区别: 该进程还未结束, 只是暂停执行. 本信号不能被阻塞, 处理或忽略.
-SIGTSTP	|20	|Terminal stop signal (POSIX);停止进程的运行|但该信号可以被处理和忽略. 用户键入SUSP字符时(通常是Ctrl-Z)发出这个信号
-SIGTTIN	|21	|Background process trying to read, from TTY (POSIX);当后台作业要从用户终端读数据时, 该作业中的所有进程会收到SIGTTIN 信号|缺省时这些进程会停止执行
-SIGTTOU	|22|Background process trying to write, to TTY (POSIX);写终端(或修改终端模式)时收到|缺省时这些进程会停止执行
-SIGURG	|23|Urgent condition on socket (4.2 BSD);有"紧急"数据或out-of-band数据到达socket时产生|忽略
-SIGXCPU	|24	|CPU limit exceeded (4.2 BSD); 超过CPU时间资源限制. 这个限制可以由getrlimit/setrlimit来读取/ 改变|建立CORE文件
-SIGXFSZ	|25|File size limit exceeded (4.2 BSD);超过文件大小资源限制|建立CORE文件
-SIGVTALRM	|26	|Virtual alarm clock (4.2 BSD);虚拟时钟信号. 类似于SIGALRM, 但是计算的是该进程占用的CPU时间.|进程退出
-SIGPROF|27	|Profiling alarm clock (4.2 BSD)；类似于SIGALRM/SIGVTALRM, 但包括该进程用的CPU时间以及系统调用的时间|进程终止
-SIGWINCH|	28	|Window size change (4.3 BSD, Sun)；窗口大小改变|忽略
-SIGIO	|29|I/O now possible (4.2 BSD)；文件描述符准备就绪, 可以开始进行输入/输出操作.|进程终止
-SIGPWR	|30|Power failure restart (System V)；电力故障|进程终止
+|信号|名字|描述|进程行为|
+|------|---|---------|-----|
+|SIGHUP	|1	|Hangup (POSIX)；挂断|终止进程|
+|SIGINT	|2	|Terminal interrupt (ANSI)；终端终端|终止进程|
+|SIGQUIT|	3	|Terminal quit (POSIX)；终端退出|终止进程，并且生成core文件|
+|SIGILL|	4	|Illegal instruction (ANSI)；非法指令|建立CORE文件|
+|SIGTRAP|	5|	Trace trap (POSIX)；跟踪自陷|建立CORE文件|
+|SIGIOT	|6|	IOT Trap (4.2 BSD)；执行I/O自陷|建立CORE文件|
+|SIGBUS	|7	|BUS error (4.2 BSD)；总线错误|建立CORE文件|
+|SIGFPE|	8	|Floating point exception (ANSI)；浮点异常|建立CORE文件|
+|SIGKILL	|9	|Kill(can't be caught or ignored) (POSIX)；杀死进程|终止进程|
+|SIGUSR1	|10	|User defined signal 1 (POSIX)；用户定义信号1|终止进程|
+|SIGSEGV	|11	|Invalid memory segment access (ANSI)；段非法错误|建立CORE文件|
+|SIGUSR2	|12|User defined signal 2 (POSIX)；用户定义信号2|终止进程|
+|SIGPIPE	|13	|Write on a pipe with no reader, Broken pipe (POSIX)；向一个没有读进程的管道写数据|终止进程|
+|SIGALRM	|14|Alarm clock (POSIX)；定时时钟|缺省的动作就是终止当前进程|
+|SIGTERM	|15|Termination (ANSI)终止|进程终止|
+|SIGSTKFLT	|16|Stack fault；协处理器堆栈错误|进程终止|
+|SIGCHLD	|17|Child process has stopped or exited, changed (POSIX)；子进程结束时, 父进程会收到这个信号|忽略|
+|SIGCONTv |18|Continue executing, if stopped (POSIX)；让一个停止(stopped)的进程继续执行|忽略，不能被阻塞|
+|SIGSTOP	|19|	Stop executing(can't be caught or ignored) (POSIX)；停止一个进程|注意它和terminate以及interrupt的区别: 该进程还未结束, 只是暂停执行. 本信号不能被阻塞, 处理或忽略.|
+|SIGTSTP	|20	|Terminal stop signal (POSIX);停止进程的运行|但该信号可以被处理和忽略. 用户键入SUSP字符时(通常是Ctrl-Z)发出这个信号|
+|SIGTTIN	|21	|Background process trying to read, from TTY (POSIX);当后台作业要从用户终端读数据时, 该作业中的所有进程会收到SIGTTIN 信号|缺省时这些进程会停止执行|
+|SIGTTOU	|22|Background process trying to write, to TTY (POSIX);写终端(或修改终端模式)时收到|缺省时这些进程会停止执行|
+|SIGURG	|23|Urgent condition on socket (4.2 BSD);有"紧急"数据或out-of-band数据到达socket时产生|忽略|
+|SIGXCPU	|24	|CPU limit exceeded (4.2 BSD); 超过CPU时间资源限制. 这个限制可以由getrlimit/setrlimit来读取/ 改变|建立CORE文件|
+|SIGXFSZ	|25|File size limit exceeded (4.2 BSD);超过文件大小资源限制|建立CORE文件|
+|SIGVTALRM	|26	|Virtual alarm clock (4.2 BSD);虚拟时钟信号. 类似于SIGALRM, 但是计算的是该进程占用的CPU时间.|进程退出|
+|SIGPROF|27	|Profiling alarm clock (4.2 BSD)；类似于SIGALRM/SIGVTALRM, 但包括该进程用的CPU时间以及系统调用的时间|进程终止|
+|SIGWINCH|	28	|Window size change (4.3 BSD, Sun)；窗口大小改变|忽略|
+|SIGIO	|29|I/O now possible (4.2 BSD)；文件描述符准备就绪, 可以开始进行输入/输出操作.|进程终止|
+|SIGPWR	|30|Power failure restart (System V)；电力故障|进程终止|
 
 # 父子进程的关系
 ## 概念

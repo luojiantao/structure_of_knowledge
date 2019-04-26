@@ -1,6 +1,6 @@
-
-[# lock-free 特性
+# lock-free 特性
 一个“锁无关”的程序能够确保执行它的所有线程中至少有一个能够继续往下执行
+
 ## 参考链接
 [http://www.cppblog.com/mysileng/archive/2014/09/03/208222.html](http://www.cppblog.com/mysileng/archive/2014/09/03/208222.html)
 [https://www.boost.org/doc/libs/1_55_0/boost/lockfree/queue.hpp](https://www.boost.org/doc/libs/1_55_0/boost/lockfree/queue.hpp)
@@ -249,10 +249,12 @@ cond(yes)->op2->op3->op0
 
 ## 条件变量std::condition_variable
 - 参考链接  
-	![https://www.jianshu.com/p/a31d4fb5594f](https://www.jianshu.com/p/a31d4fb5594f)	
+	[https://www.jianshu.com/p/a31d4fb5594f](https://www.jianshu.com/p/a31d4fb5594f)	
 - 头文件
+	```
 	#include <condition_variable>  // std::condition_variable
 	#include <mutex>               // std::mutex
+	```
 ### 成员函数
 
 1. wait  
@@ -298,3 +300,4 @@ cond(yes)->op2->op3->op0
   
   std::unique_lock<std::mutex> lock(mutex);
   // 
+  ```
