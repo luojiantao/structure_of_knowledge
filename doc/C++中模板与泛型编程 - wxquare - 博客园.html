@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<!-- saved from url=(0046)https://www.cnblogs.com/wxquare/p/4743180.html -->
+<html lang="zh-cn"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="origin">
+    <title>C++中模板与泛型编程 - wxquare - 博客园</title>
+<meta property="og:description" content="目录 定义一个通用模板 模板特化和偏特化 模板实例化与匹配 可变参数模板 定义一个通用模板 模板特化和偏特化 模板实例化与匹配 可变参数模板 泛型编程是指独立与任何类型的方式编写代码。泛型编程和面向对">
+    <link type="text/css" rel="stylesheet" href="./C++中模板与泛型编程 - wxquare - 博客园_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="./C++中模板与泛型编程 - wxquare - 博客园_files/bundle-darkgreentrip.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="./C++中模板与泛型编程 - wxquare - 博客园_files/bundle-darkgreentrip-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/wxquare/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/wxquare/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/wxquare/wlwmanifest.xml">
+    <script src="./C++中模板与泛型编程 - wxquare - 博客园_files/amp4ads-host-v0.js.下载"></script><script src="./C++中模板与泛型编程 - wxquare - 博客园_files/pubads_impl_rendering_2019041801.js.下载"></script><script async="" src="./C++中模板与泛型编程 - wxquare - 博客园_files/analytics.js.下载"></script><script type="text/javascript" src="./C++中模板与泛型编程 - wxquare - 博客园_files/encoder.js.下载"></script><script src="./C++中模板与泛型编程 - wxquare - 博客园_files/jquery-2.2.0.min.js.下载"></script>
+    <script>var currentBlogId=226838;var currentBlogApp='wxquare',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="./C++中模板与泛型编程 - wxquare - 博客园_files/blog-common.js.下载" type="text/javascript"></script>
+<link rel="preload" href="./C++中模板与泛型编程 - wxquare - 博客园_files/f.txt" as="script"><script type="text/javascript" src="./C++中模板与泛型编程 - wxquare - 博客园_files/f.txt"></script><script src="./C++中模板与泛型编程 - wxquare - 博客园_files/pubads_impl_2019041801.js.下载" async=""></script><link rel="prefetch" href="https://tpc.googlesyndication.com/safeframe/1-0-32/html/container.html"></head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="https://www.cnblogs.com/wxquare/"><img id="blogLogo" src="./C++中模板与泛型编程 - wxquare - 博客园_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/wxquare/">wxquare的学习笔记</a></h1>
+<h2></h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/wxquare/">首页</a></li>
+<li></li>
+<li></li>
+<li>
+<!----></li>
+<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+		<div class="blogStats">
+			
+			
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/wxquare/p/4743180.html">C++中模板与泛型编程</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body"><h2>&nbsp;目录</h2>
+<ul>
+<li style="list-style-type: none;">
+<ul>
+<li><span style="color: #0000ff; font-size: 16px;">定义一个通用模板</span></li>
+<li><span style="color: #0000ff; font-size: 16px;">模板特化和偏特化</span></li>
+<li><span style="color: #0000ff; font-size: 16px;">模板实例化与匹配</span></li>
+<li><span style="color: #0000ff; font-size: 16px;">可变参数模板</span></li>
+</ul>
+</li>
+</ul>
+<p>　<span style="font-size: 16px;">　泛型编程是指独立与任何类型的方式编写代码。泛型编程和面向对象编程，都依赖与某种形式的多态。面向对象编程的多态性在运行时应用于存在继承关系的类，一段代码可以可以忽略基类和派生类之间的差异。在泛型编程中，编写的代码可以用作多种类型的对象。面向对象编程所依赖的多态性称为运行时多态性，泛型编程所依赖的多态性称为编译时多态性或参数式多态性。&nbsp;</span></p>
+<hr>
+<h2>1 模板定义</h2>
+<h3>1.1 函数模板</h3>
+<ul>
+<li><span style="font-size: 15px;">模板定义以关键字 template 开始，后接模板形参表，模板形参表是用尖括号括住的一个或多个模板形参的列表，形参之间以逗号分隔。模板形参表不能为空。</span></li>
+<li><span style="font-size: 15px;">模板函数的类型形参跟在关键字 class 或 typename 之后定义.在函数模板形参表中，关键字 typename 和 class 具有相同含义，可以互换使用，两个关键字都可以在同一模板形参表中使用</span></li>
+<li><span style="font-size: 15px;">函数模板可以用与非模板函数一样的方式声明为 inline。说明符放在模板形参表之后、返回类型之前，不能放在关键字 template 之前</span></li>
+<li><span style="font-size: 15px;">函数模板调用方式。在发生函数模板的调用时，不显示给出模板参数而经过参数推演，称之为函数模板的隐式模板实参调用（隐式调用）在发生函数模板的调用时，显示给出模板参数而不需要经过参数推演，称之为函数模板的显示模板实参调用（显示调用）。显示模板实参调用在参数推演不成功的情况下是有必要的。</span></li>
+<li><span style="font-size: 16px;"><span style="font-size: 15px;">函数模板与函数重载。函数模板实际上是建立一个通用函数，其函数类型和形参类型不具体指定，用一个虚拟的类型来代表，凡是函数体相同的函数都可以用这个模板来代替，不必定以多个函数。重载函数的参数个数、参数类型或参数顺序3者中必须至少有一种不同，函数返回值类型可以相同也可以不同，函数体可以相同</span>。</span></li>
+</ul>
+<div class="cnblogs_code">
+<pre><span style="color: #008080;">1</span> template&lt;typename T&gt;
+<span style="color: #008080;">2</span> inline <span style="color: #0000ff;">bool</span> isEqual(<span style="color: #0000ff;">const</span> T&amp; t1, <span style="color: #0000ff;">const</span> T&amp;<span style="color: #000000;"> t2) {
+</span><span style="color: #008080;">3</span>     <span style="color: #0000ff;">return</span> t1 ==<span style="color: #000000;"> t2;
+</span><span style="color: #008080;">4</span> }</pre>
+</div>
+<h3>1.2 类模板</h3>
+<ul>
+<li><span style="font-size: 15px;">类模板也是模板，因此必须以关键字 template 开头，后接模板形参表</span></li>
+<li><span style="font-size: 15px;">除了模板形参表外，类模板的定义看起来与任意其他类问相似。类模板可以定义数据成员、函数成员和类型成员，也可以使用访问标号控制对成员的访问，还可以定义构造函数和析构函数等等。</span></li>
+<li><span style="font-size: 15px;">与调用函数模板形成对比，使用类模板时，</span><span style="color: #0000ff;"><span style="font-size: 15px;">必须为模板形参显式指定实参，类模板的形参不存在实参推演的</span>。</span></li>
+</ul>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008080;">1</span> <span style="color: #0000ff;">const</span> size_t MAXSIZE = <span style="color: #800080;">100</span><span style="color: #000000;">;
+</span><span style="color: #008080;">2</span> template&lt;<span style="color: #0000ff;">class</span> T&gt;
+<span style="color: #008080;">3</span> <span style="color: #0000ff;">class</span><span style="color: #000000;"> Stack{
+</span><span style="color: #008080;">4</span> <span style="color: #0000ff;">private</span><span style="color: #000000;">:
+</span><span style="color: #008080;">5</span> <span style="color: #000000;">    T elements[MAXSIZE];
+</span><span style="color: #008080;">6</span> <span style="color: #0000ff;">public</span><span style="color: #000000;">:
+</span><span style="color: #008080;">7</span>     <span style="color: #008000;">//</span><span style="color: #008000;">others</span>
+<span style="color: #008080;">8</span> };</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<h3>1.3 模板参数</h3>
+<ul>
+<li><span style="font-size: 15px;">类型模板形参：类型形参由关见字class或typename后接说明符构成，如template&lt;class T&gt; void getMaxVal(const T&amp; a，const T&amp; b){};其中T就是一个类型形参，类型形参的名字由用户自已确定。</span></li>
+<li><span style="font-size: 15px;">非类型模板形参：模板的非类型形参也就是内置类型形参，如template&lt;class T, int X&gt; greaterThanX(const T&amp; a);其中int X就是非类型的模板形参。非类型形参在模板定义的内部是常量值，也就是说非类型形参在模板的内部是常量。非类型的模板参数是有限制的,一般是一个整型，它们可以是常整数（包括枚举类型）或者指向外部链接对象的指针。<span style="color: #0000ff;">浮点数和类对象是不允许作为非类型模板参数的</span>。</span></li>
+<li><span style="font-size: 15px;">模板的默认参数。<span style="color: #0000ff;">可以为类模板的类型形参提供默认值，但不能为函数模板的类型形参提供默认值</span>。函数模板和类模板都可以为模板的非类型形参提供默认参数。类模板类型形参默认值和函数的默认参数一样，如果有多个类型形参则从第一个形参设定了默认值之后的所有模板形参都要设定默认值。类模板的类型形参默认值形式为：template&lt;class T1, class T2=int&gt; class A{};为第二个模板类型形参T2提供int型的默认值，在类模板的外部定义类中的成员时template 后的形参表应省略默认的形参类型。比如template&lt;class&nbsp; T1, class T2=int&gt; class A{public: void h();}; 定义方法为template&lt;class T1,class T2&gt; void A&lt;T1,T2&gt;::h(){}</span></li>
+</ul>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008080;"> 1</span> template&lt;typename T,<span style="color: #0000ff;">int</span> X = <span style="color: #800080;">5</span>&gt;
+<span style="color: #008080;"> 2</span> inline <span style="color: #0000ff;">bool</span> isEqualToX(<span style="color: #0000ff;">const</span> T&amp;<span style="color: #000000;"> a) {
+</span><span style="color: #008080;"> 3</span>     <span style="color: #0000ff;">return</span> a ==<span style="color: #000000;"> X;
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">}
+</span><span style="color: #008080;"> 5</span> 
+<span style="color: #008080;"> 6</span> template&lt;<span style="color: #0000ff;">class</span> T,<span style="color: #0000ff;">int</span> MAXSIZE=<span style="color: #800080;">100</span>&gt;
+<span style="color: #008080;"> 7</span> <span style="color: #0000ff;">class</span><span style="color: #000000;"> Stack {
+</span><span style="color: #008080;"> 8</span> <span style="color: #0000ff;">private</span><span style="color: #000000;">:
+</span><span style="color: #008080;"> 9</span> <span style="color: #000000;">    T elements[MAXSIZE];
+</span><span style="color: #008080;">10</span> <span style="color: #0000ff;">public</span><span style="color: #000000;">:
+</span><span style="color: #008080;">11</span>     <span style="color: #008000;">//</span><span style="color: #008000;">others</span>
+<span style="color: #008080;">12</span> };</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<hr>
+<h2>2.模板特化与偏特化</h2>
+<p>　<span style="font-size: 15px;">　<span style="color: #0000ff;">有时为了需要,针对特定的类型,需要对模板进行特化,也就是特殊处理</span>。 例如，stack类模板针对bool类型，因为实际上bool类型只需要一个二进制位，就可以对其进行存储，使用一个字或者一个字节都是浪费存储空间的.。特化必须在同一命名空间下进行，可以特化类模板也可以特化函数模板，但类模板可以偏特化和全特化，而函数模板只能全特化。模板的偏特化是指需要根据模板的某些但不是全部的参数进行特化。严格的来说，函数模板并不支持偏特化，但由于可以对函数进行重载，所以可以达到类似于类模板偏特化的效果。模板实例化时会优先匹配”模板参数”最相符的那个特化版本。template&nbsp;&lt;&nbsp;&gt;告诉编译器这是一个特化的模板</span>。</p>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008080;"> 1</span> template&lt;<span style="color: #0000ff;">class</span> T,<span style="color: #0000ff;">int</span> MAXSIZE=<span style="color: #800080;">100</span>&gt;
+<span style="color: #008080;"> 2</span> <span style="color: #0000ff;">class</span><span style="color: #000000;"> Stack {
+</span><span style="color: #008080;"> 3</span> <span style="color: #0000ff;">private</span><span style="color: #000000;">:
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">    T elements[MAXSIZE];
+</span><span style="color: #008080;"> 5</span> <span style="color: #0000ff;">public</span><span style="color: #000000;">:
+</span><span style="color: #008080;"> 6</span>     <span style="color: #008000;">//</span><span style="color: #008000;">others</span>
+<span style="color: #008080;"> 7</span> <span style="color: #000000;">};
+</span><span style="color: #008080;"> 8</span> 
+<span style="color: #008080;"> 9</span> <span style="color: #008000;">//</span><span style="color: #008000;">template specializations aim at bool</span>
+<span style="color: #008080;">10</span> template&lt;&gt;
+<span style="color: #008080;">11</span> <span style="color: #0000ff;">class</span> Stack&lt;<span style="color: #0000ff;">bool</span>&gt;<span style="color: #000000;">{
+</span><span style="color: #008080;">12</span> 
+<span style="color: #008080;">13</span> };</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008080;"> <br> 1</span> template&lt;typename T&gt;
+<span style="color: #008080;"> 2</span> inline <span style="color: #0000ff;">bool</span> isEqual(<span style="color: #0000ff;">const</span> T t1, <span style="color: #0000ff;">const</span><span style="color: #000000;"> T t2) {
+</span><span style="color: #008080;"> 3</span>     <span style="color: #0000ff;">return</span> t1 ==<span style="color: #000000;"> t2;
+</span><span style="color: #008080;"> 4</span> <span style="color: #000000;">}
+</span><span style="color: #008080;"> 5</span> 
+<span style="color: #008080;"> 6</span> //针对int型的指针做特化
+<span style="color: #008080;"> 7</span> template&lt;&gt;
+<span style="color: #008080;"> 8</span> inline <span style="color: #0000ff;">bool</span> isEqual(<span style="color: #0000ff;">const</span> <span style="color: #0000ff;">int</span>* p1,<span style="color: #0000ff;">const</span> <span style="color: #0000ff;">int</span>*<span style="color: #000000;"> p2){
+</span><span style="color: #008080;"> 9</span>     <span style="color: #0000ff;">return</span> *p1 == *<span style="color: #000000;">p2;
+</span><span style="color: #008080;">10</span> }</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<p><span style="font-size: 15px;">类模板的偏特化,例如c++标准库中的类vector的定义,这个偏特化的例子中，一个参数被绑定到bool类型，而另一个参数仍未绑定需要由用户指定。</span></p>
+<div class="cnblogs_code">
+<pre><span style="color: #008080;">1</span> template &lt;<span style="color: #0000ff;">class</span> T, <span style="color: #0000ff;">class</span> Allocator&gt;
+<span style="color: #008080;">2</span> <span style="color: #0000ff;">class</span> vector { <span style="color: #008000;">//</span><span style="color: #008000;"> … </span><span style="color: #008000;">//</span><span style="color: #008000;"> };</span>
+<span style="color: #008080;">3</span> template &lt;<span style="color: #0000ff;">class</span> Allocator&gt;
+<span style="color: #008080;">4</span> <span style="color: #0000ff;">class</span> vector&lt;<span style="color: #0000ff;">bool</span>, Allocator&gt; { <span style="color: #008000;">//</span><span style="color: #008000;">…</span><span style="color: #008000;">//</span><span style="color: #008000;">};</span></pre>
+</div>
+<p><span style="font-size: 15px;">函数模板的偏特化,严格的来说，函数模板并不支持偏特化，但由于可以对函数进行重载，所以可以达到类似于类模板偏特化的效果。根据重载规则，对（a）进行重载。如果将（a）称为基模板，那么（b）称为对基模板（a）的重载，而非对（a）的偏特化。C++的标准委员会仍在对下一个版本中是否允许函数模板的偏特化进行讨论。</span><br><span style="font-size: 15px;">template &lt;class T&gt; void f(T);  (a)</span><br><span style="font-size: 15px;">template &lt; class T&gt; void f(T*);  (b)</span></p>
+<hr>
+<h2>3 模板实例化与匹配规则</h2>
+<p><span style="font-size: 15px;">3.1 <strong>隐式实例化</strong>。在使用模板函数和模板类时，不存在指定类型的模板函数和模板类的实体时，由编译器根据指定类型参数隐式生成模板函数或者模板类的实体称之为模板的隐式实例化。函数模板隐式实例化指的是在发生函数调用的时候，如果没有发现相匹配的函数存在，编译器就会寻找同名函数模板，如果可以成功进行参数类型推演，就对函数模板进行实例化。类模板隐式实例化指的是在使用模板类时才将模板实例化。</span></p>
+<p><span style="font-size: 15px;">3.2 <strong>显示实例化</strong>。显示实例化也称为外部实例化。在不发生函数调用的时候将函数模板实例化，或者在不适用类模板的时候将类模板实例化称之为模板显示实例化。对于函数模板而言，不管是否发生函数调用，都可以通过显示实例化声明将函数模板实例化，定义函数模板为：template函数返回类型 函数模板名&lt;实际类型列表&gt;（函数参数列表），显示实例化为template void func&lt;int&gt;(const int&amp;);类模板的显示实例化，对于类模板而言，不管是否生成一个模板类的对象，都可以直接通过显示实例化声明将类模板实例化，定义类模板格式为：template class 类模板名&lt;实际类型列表&gt;，显示实例化为template class theclass&lt;int&gt;;</span></p>
+<p><span style="font-size: 15px;"><strong>3.3 匹配规则</strong></span></p>
+<p><span style="font-size: 15px;">(1) 类模板的匹配规则。</span><span style="font-size: 15px;">最优化的优于次特化的，即模板参数最精确匹配的具有最高的优先权，每个类型都可以用作普通型（a）的参数，但只有指针类型才能用作（b）的参数，而只有void*才能作为(c)的参数。</span></p>
+<p style="margin-left: 30px;">template &lt;class T&gt; class vector{//…//}; // (a) 普通型<br>template &lt;class T&gt; class vector&lt;T*&gt;{//…//}; // (b) 对指针类型特化<br>template &lt;&gt; class vector &lt;void*&gt;{//…//}; // (c) 对void*进行特化</p>
+<p><span style="font-size: 15px;">(2) 函数模板的匹配规则。</span><em id="__mceDel"><span style="font-size: 15px;">非模板函数具有最高的优先权。如果不存在匹配的非模板函数的话，那么最匹配的和最特化的函数具有高优先权</span></em></p>
+<p style="margin-left: 30px;"><span style="font-size: 15px;">template &lt;class T&gt; void f(T);  // (d)</span><br><span style="font-size: 15px;">template &lt;class T&gt; void f(int, T, double); // (e)</span><br><span style="font-size: 15px;">template &lt;class T&gt; void f(T*);  // (f)</span><br><span style="font-size: 15px;">template &lt;&gt; void f&lt;int&gt; (int) ; // (g)</span><br><span style="font-size: 15px;">void f(double);  // (h)</span><br><span style="font-size: 15px;">bool b;</span><br><span style="font-size: 15px;">int i;</span><br><span style="font-size: 15px;">double d;</span><br><span style="font-size: 15px;">f(b); // 以 T = bool 调用 （d）</span><br><span style="font-size: 15px;">f(i,42,d) // 以 T = int 调用（e）</span><br><span style="font-size: 15px;">f(&amp;i) ; // 以 T = int* 调用（f）</span><br><span style="font-size: 15px;">f(d);  //  调用（g）</span></p>
+<hr>
+<h2>4.可变参数模板</h2>
+<p><span style="font-size: 15px;">参考：<a href="http://www.cnblogs.com/qicosmos/p/4325949.html" target="_blank">http://www.cnblogs.com/qicosmos/p/4325949.html</a></span></p>
+<p><span style="font-size: 15px;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 可变参数模板是C++11新增的特性之一，它对参数高度泛化，他能表示0到任意个数、任意类型的参数。可变模板参数之前会带有省略号，把带省略号的参数称为“参数包”，它里面包含了0到N（N&gt;=0）个模版参数。我们无法直接获取参数包args中的每个参数的，只能通过展开参数包的方式来获取参数包中的每个参数，这是使用可变模版参数的一个主要特点。可变模版参数和普通的模版参数语义是一致的，所以可以应用于函数和类，即可变模版参数函数和可变模版参数类，然而，模版函数不支持偏特化，所以可变模版参数函数和可变模版参数类展开可变模版参数的方法还不尽相同。</span></p>
+<h3>4.1 可变模板参数函数与参数的展开</h3>
+<ul>
+<li><span style="font-size: 15px;">递归函数方式展开参数包。通过递归函数展开参数包，需要提供一个参数包展开的函数和一个递归终止函数，递归终止函数正是用来终止递归的。</span></li>
+<li><span style="font-size: 15px;">逗号方式展开参数包</span></li>
+
+
+
+
+
+</ul>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008080;"> 1</span> #include &lt;iostream&gt;
+<span style="color: #008080;"> 2</span> <span style="color: #0000ff;">using</span> <span style="color: #0000ff;">namespace</span><span style="color: #000000;"> std;
+</span><span style="color: #008080;"> 3</span> <span style="color: #008000;">//</span><span style="color: #008000;">递归终止函数</span>
+<span style="color: #008080;"> 4</span> <span style="color: #0000ff;">void</span><span style="color: #000000;"> print()
+</span><span style="color: #008080;"> 5</span> <span style="color: #000000;">{
+</span><span style="color: #008080;"> 6</span>    cout &lt;&lt; <span style="color: #800000;">"</span><span style="color: #800000;">empty</span><span style="color: #800000;">"</span> &lt;&lt;<span style="color: #000000;"> endl;
+</span><span style="color: #008080;"> 7</span> <span style="color: #000000;">}
+</span><span style="color: #008080;"> 8</span> <span style="color: #008000;">//</span><span style="color: #008000;">展开函数</span>
+<span style="color: #008080;"> 9</span> template &lt;<span style="color: #0000ff;">class</span> T, <span style="color: #0000ff;">class</span> ...Args&gt;
+<span style="color: #008080;">10</span> <span style="color: #0000ff;">void</span><span style="color: #000000;"> print(T head, Args... rest)
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">{
+</span><span style="color: #008080;">12</span>    cout &lt;&lt; <span style="color: #800000;">"</span><span style="color: #800000;">parameter </span><span style="color: #800000;">"</span> &lt;&lt; head &lt;&lt;<span style="color: #000000;"> endl;
+</span><span style="color: #008080;">13</span> <span style="color: #000000;">   print(rest...);
+</span><span style="color: #008080;">14</span> <span style="color: #000000;">}
+</span><span style="color: #008080;">15</span> 
+<span style="color: #008080;">16</span> 
+<span style="color: #008080;">17</span> <span style="color: #0000ff;">int</span> main(<span style="color: #0000ff;">void</span><span style="color: #000000;">)
+</span><span style="color: #008080;">18</span> <span style="color: #000000;">{
+</span><span style="color: #008080;">19</span>    print(<span style="color: #800080;">1</span>,<span style="color: #800080;">2</span>,<span style="color: #800080;">3</span>,<span style="color: #800080;">4</span><span style="color: #000000;">);
+</span><span style="color: #008080;">20</span>    <span style="color: #0000ff;">return</span> <span style="color: #800080;">0</span><span style="color: #000000;">;
+</span><span style="color: #008080;">21</span> }</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<div class="cnblogs_code"><div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/copycode.gif" alt="复制代码"></a></span></div>
+<pre><span style="color: #008080;"> 1</span> template &lt;<span style="color: #0000ff;">class</span> T&gt;
+<span style="color: #008080;"> 2</span> <span style="color: #0000ff;">void</span><span style="color: #000000;"> printarg(T t)
+</span><span style="color: #008080;"> 3</span> <span style="color: #000000;">{
+</span><span style="color: #008080;"> 4</span>    cout &lt;&lt; t &lt;&lt;<span style="color: #000000;"> endl;
+</span><span style="color: #008080;"> 5</span> <span style="color: #000000;">}
+</span><span style="color: #008080;"> 6</span> 
+<span style="color: #008080;"> 7</span> template &lt;<span style="color: #0000ff;">class</span> ...Args&gt;
+<span style="color: #008080;"> 8</span> <span style="color: #0000ff;">void</span><span style="color: #000000;"> expand(Args... args)
+</span><span style="color: #008080;"> 9</span> <span style="color: #000000;">{
+</span><span style="color: #008080;">10</span>    <span style="color: #0000ff;">int</span> arr[] = {(printarg(args), <span style="color: #800080;">0</span><span style="color: #000000;">)...};
+</span><span style="color: #008080;">11</span> <span style="color: #000000;">}
+</span><span style="color: #008080;">12</span> 
+<span style="color: #008080;">13</span> expand(<span style="color: #800080;">1</span>,<span style="color: #800080;">2</span>,<span style="color: #800080;">3</span>,<span style="color: #800080;">4</span>);</pre>
+<div class="cnblogs_code_toolbar"><span class="cnblogs_code_copy"><a href="javascript:void(0);" onclick="copyCnblogsCode(this)" title="复制代码"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/copycode.gif" alt="复制代码"></a></span></div></div>
+<h3>4.2 可变模板参数类与参数展开</h3>
+<p class="p0"><span style="font-size: 16px;">　<span style="font-size: 15px;">　可变参数模板类的参数包展开的方式和可变参数模板函数的展开方式不同，可变参数模板类的参数包展开需要通过模板特化和继承方式去展开，展开方式比可变参数模板函数要复杂。可变参数模板类是一个带可变模板参数的模板类，比如C++11中的元祖std::tuple就是一个可变模板类，它的定义如下，这个可变参数模板类可以携带任意类型任意个数的模板参数。</span></span></p>
+<div class="cnblogs_code">
+<pre><span style="color: #008080;">1</span> template&lt; <span style="color: #0000ff;">class</span>... Types &gt;
+<span style="color: #008080;">2</span> <span style="color: #0000ff;">class</span><span style="color: #000000;"> tuple; 
+</span><span style="color: #008080;">3</span> std::tuple&lt;<span style="color: #0000ff;">int</span>&gt; tp1 = std::make_tuple(<span style="color: #800080;">1</span><span style="color: #000000;">);
+</span><span style="color: #008080;">4</span> std::tuple&lt;<span style="color: #0000ff;">int</span>, <span style="color: #0000ff;">double</span>&gt; tp2 = std::make_tuple(<span style="color: #800080;">1</span>, <span style="color: #800080;">2.5</span><span style="color: #000000;">);
+</span><span style="color: #008080;">5</span> std::tuple&lt;<span style="color: #0000ff;">int</span>, <span style="color: #0000ff;">double</span>, <span style="color: #0000ff;">string</span>&gt; tp3 = std::make_tuple(<span style="color: #800080;">1</span>, <span style="color: #800080;">2.5</span><span style="color: #000000;">, “”);
+</span><span style="color: #008080;">6</span> std::tuple&lt;&gt; tp;<span style="color: #008000;">//</span><span style="color: #008000;">可变参数模板的模板参数个数可以为0个，所以下面的定义也是也是合法的：</span></pre>
+</div>
+<p>参考</p>
+<ol>
+<li><a href="http://blog.csdn.net/zhang810413/article/details/1948603">模板特化和偏特化</a></li>
+<li><a href="http://www.cnblogs.com/qicosmos/p/4325949.html">泛化之美--C++11可变模版参数的妙用</a></li>
+</ol></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/wxquare/category/998534.html" target="_blank">C/C++</a></div>
+<div id="EntryTag"></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(4743180,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow(&#39;40fd2bd2-c4f4-e411-b908-9dcfd8948a71&#39;);" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/wxquare/" target="_blank"><img src="./C++中模板与泛型编程 - wxquare - 博客园_files/20160729155528.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="http://home.cnblogs.com/u/wxquare/">wxquare</a><br>
+            <a href="http://home.cnblogs.com/u/wxquare/followees">关注 - 12</a><br>
+            <a href="http://home.cnblogs.com/u/wxquare/followers">粉丝 - 76</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow(&#39;40fd2bd2-c4f4-e411-b908-9dcfd8948a71&#39;);return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(4743180,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">1</span>
+    </div>
+    <div class="buryit" onclick="votePost(4743180,&#39;Bury&#39;)">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/wxquare/p/6692924.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/wxquare/p/6692924.html" title="发布于2017-05-06 23:31">C/C++中的static</a><br><a href="https://www.cnblogs.com/wxquare/p/4759020.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/wxquare/p/4759020.html" title="发布于2017-05-08 23:02">C++11中智能指针的原理、使用、实现</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2017-05-08 21:22</span> <a href="https://www.cnblogs.com/wxquare/">wxquare</a> 阅读(<span id="post_view_count">7656</span>) 评论(<span id="post_comment_count">0</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=4743180" rel="nofollow">编辑</a> <a href="https://www.cnblogs.com/wxquare/p/4743180.html#" onclick="AddToWz(4743180);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=226838,cb_entryId=4743180,cb_blogApp=currentBlogApp,cb_blogUserGuid='40fd2bd2-c4f4-e411-b908-9dcfd8948a71',cb_entryCreatedDate='2017/5/8 21:22:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="https://www.cnblogs.com/wxquare/p/4743180.html#" onclick="return RefreshPage();">刷新页面</a><a href="https://www.cnblogs.com/wxquare/p/4743180.html#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login(&#39;commentform&#39;);">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-工控&#39;)">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://ke.qq.com/adActivity.html?name=xiangxueketang2" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-享学&#39;)">【培训】IT职业生涯指南，Java程序员薪资翻3倍的秘密</a><br><a href="https://group.cnblogs.com/topic/81220.html" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-咕泡&#39;)">【培训】架构师开发十年，就只剩下这套架构体系了</a><br><a href="https://gitee.com/enterprises?from=bky-2" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-gitee&#39;)">【推荐】专业便捷的企业级代码托管服务 - Gitee 码云</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="./C++中模板与泛型编程 - wxquare - 博客园_files/gpt.js.下载"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CJ-z07WQ8OECFVSdvQod3-YIhw"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" width="300" height="250" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" style="border: 0px; vertical-align: bottom;" data-google-container-id="1" data-load-complete="true" src="./C++中模板与泛型编程 - wxquare - 博客园_files/saved_resource.html"></iframe></div></div>
+</div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/cxq0017/p/6076856.html" target="_blank" onclick="clickRecomItmem(6076856)">C++ 类模板与模板类详解</a><br>·  <a href="https://www.cnblogs.com/xushjie/archive/2012/10/01/2709711.html" target="_blank" onclick="clickRecomItmem(2709711)">C++ - 模板与泛型编程</a><br>·  <a href="https://www.cnblogs.com/sevenyuan/p/3154346.html" target="_blank" onclick="clickRecomItmem(3154346)">C++中模板使用详解</a><br>·  <a href="https://www.cnblogs.com/yuehui/archive/2012/06/18/2553712.html" target="_blank" onclick="clickRecomItmem(2553712)">C++类模板与STL编程</a><br>·  <a href="https://www.cnblogs.com/metalsteel/p/6285766.html" target="_blank" onclick="clickRecomItmem(6285766)">C++中的模板编程</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CIqd0rWQ8OECFVSdvQod3-YIhw"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" width="468" height="60" scrolling="no" marginwidth="0" marginheight="0" frameborder="0" style="border: 0px; vertical-align: bottom;" data-google-container-id="2" data-load-complete="true" src="./C++中模板与泛型编程 - wxquare - 博客园_files/saved_resource(1).html"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/624483/" target="_blank">10万美元，让死去的宠物狗克隆“复活”，你愿意吗?</a><br> ·  <a href="https://news.cnblogs.com/n/624482/" target="_blank">研究人员创造了新的塑料类型 有望实现近乎无损的回收</a><br> ·  <a href="https://news.cnblogs.com/n/624481/" target="_blank">一线｜联通首个子公司完成混改 9家车企入股智网科技</a><br> ·  <a href="https://news.cnblogs.com/n/624480/" target="_blank">新锤子手机系统要来了？坚果OS官方微博现身</a><br> ·  <a href="https://news.cnblogs.com/n/624479/" target="_blank">大规模广告欺诈?谷歌下架百度DO Global 46款应用</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"><b>历史上的今天:</b><br>2015-05-08 <a href="https://www.cnblogs.com/wxquare/p/4486871.html">初始C++ 模板元</a><br>2015-05-08 <a href="https://www.cnblogs.com/wxquare/p/4486708.html">高手C++学习忠告~~[转载]</a><br></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/wxquare/">wxquare</a><br>园龄：<a href="https://home.cnblogs.com/u/wxquare/" title="入园时间：2015-05-07">3年11个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/wxquare/followers/">76</a><br>关注：<a href="https://home.cnblogs.com/u/wxquare/followees/">12</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow(&#39;40fd2bd2-c4f4-e411-b908-9dcfd8948a71&#39;)">+加关注</a></div><script>getFollowStatus('40fd2bd2-c4f4-e411-b908-9dcfd8948a71')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" cellspacing="0" cellpadding="0" title="Calendar">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2019/03/01&#39;);return false;">&lt;</a></td><td align="center">2019年4月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar(&#39;2019/05/01&#39;);return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" align="center" abbr="日" scope="col">日</th><th class="CalDayHeader" align="center" abbr="一" scope="col">一</th><th class="CalDayHeader" align="center" abbr="二" scope="col">二</th><th class="CalDayHeader" align="center" abbr="三" scope="col">三</th><th class="CalDayHeader" align="center" abbr="四" scope="col">四</th><th class="CalDayHeader" align="center" abbr="五" scope="col">五</th><th class="CalDayHeader" align="center" abbr="六" scope="col">六</th></tr><tr><td class="CalOtherMonthDay" align="center">31</td><td align="center">1</td><td align="center">2</td><td align="center">3</td><td align="center">4</td><td align="center">5</td><td class="CalWeekendDay" align="center">6</td></tr><tr><td class="CalWeekendDay" align="center">7</td><td align="center">8</td><td align="center">9</td><td align="center">10</td><td align="center">11</td><td align="center">12</td><td class="CalWeekendDay" align="center">13</td></tr><tr><td class="CalWeekendDay" align="center">14</td><td align="center">15</td><td align="center">16</td><td align="center">17</td><td align="center">18</td><td align="center">19</td><td class="CalWeekendDay" align="center">20</td></tr><tr><td class="CalWeekendDay" align="center">21</td><td align="center">22</td><td align="center">23</td><td align="center">24</td><td align="center">25</td><td align="center">26</td><td class="CalTodayDay" align="center">27</td></tr><tr><td class="CalWeekendDay" align="center">28</td><td align="center">29</td><td align="center">30</td><td class="CalOtherMonthDay" align="center">1</td><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td></tr><tr><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td><td class="CalOtherMonthDay" align="center">7</td><td class="CalOtherMonthDay" align="center">8</td><td class="CalOtherMonthDay" align="center">9</td><td class="CalOtherMonthDay" align="center">10</td><td class="CalOtherMonthDay" align="center">11</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input type="text" id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk">&nbsp;<input onclick="zzk_go()" type="button" value="找找看" id="btnZzk" class="btn_my_zzk"></div>
+<div id="widget_my_google" class="div_my_zzk"><input type="text" name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk">&nbsp;<input onclick="google_go()" type="button" value="谷歌搜索" class="btn_my_zzk"></div>
+</div>
+</div>
+
+</div><div id="sidebar_categories">
+<div id="sidebar_postcategory" class="catListPostCategory sidebar-block">
+<h3 class="catListTitle">随笔分类</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/wxquare/category/998534.html">C/C++(40)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/wxquare/category/688219.html">LeetCode(153)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/wxquare/category/793599.html">ML/NLP(24)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/wxquare/category/739269.html">分布式系统/hadoop(13)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/wxquare/category/687666.html">计算机基础(22)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_links763380" class="catList sidebar-block">
+<h3 class="catListTitle">常用链接</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="http://hadoop.apache.org/" rel="nofollow">Apache.hadoop</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="https://bitcoin.org/en/developer-documentation" rel="nofollow">Bitcoin开发</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="http://www.boost.org/doc/libs/1_63_0/" rel="nofollow">Boost 1.63.0</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="http://www.cplusplus.com/reference/" rel="nofollow">c++参考</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="https://leetcode.com/" rel="nofollow">leetcode</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="http://scikit-learn.org/stable/" rel="nofollow">sklearn</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_6" href="https://www.tensorflow.org/" rel="nofollow">tensorFlow</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/wxquare/p/5541414.html">1. 一步一步理解GB、GBDT、xgboost(87378)</a></li><li><a href="https://www.cnblogs.com/wxquare/p/4759020.html">2. C++11中智能指针的原理、使用、实现(48093)</a></li><li><a href="https://www.cnblogs.com/wxquare/p/5379970.html">3. 决策树模型 ID3/C4.5/CART算法比较(30587)</a></li><li><a href="https://www.cnblogs.com/wxquare/p/5484636.html">4. 机器学习之特征工程(29070)</a></li><li><a href="https://www.cnblogs.com/wxquare/p/5858008.html">5. 一步一步理解最大熵模型(26590)</a></li></ul></div>
+</div>
+</div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 wxquare
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+</body></html>
