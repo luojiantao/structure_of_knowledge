@@ -1,152 +1,150 @@
+#include <thread>
 #include "Queue.h"
+#include <iostream>
 static std::atomic<int> lflag(0);
 static std::atomic<int> lflag1(0);
+
+/*
+ThreadPoolDemo::CPriqueue
+*/
 void ThreadPoolDemo::CPriqueue::push_back(std::function<void()> task){
-    Node* newNode = new Node(task);
-    //newNode->next = nullptr;
-    if(newNode == 0){
-	std::cout << "new error" <<std::endl;
+    //Node* newNode = new Node(task);
+    /*if(newNode == 0){
+		std::cout << "new error" <<std::endl;
         return;
-    }
-    Node* oldtail = m_tail;
-    Node* temp = nullptr;
-    {
-	bool iff = true;
-        do{
-	    if (!iff){
-	        std::this_thread::yield();
-	    }else{
-	        iff = false;
-	    }
-	    //Node* oldtail = m_tail;
-	    while(oldtail->next != nullptr){
-	        //oldtail = oldtail->next;
-                oldtail = m_tail;
-	    }
-	    temp = nullptr;
-	}while(!oldtail->next.compare_exchange_weak(temp, newNode));
-
-	m_tail.compare_exchange_strong(oldtail, newNode);
-    }
-
-    {
-	    /*
-        while(!m_tail.compare_exchange_weak(oldtail, newNode)){
-	    std::this_thread::yield();
-	}
-
-	oldtail->next = newNode;
-        */
-	/*
-	Node* temp = nullptr;
-	while(!oldtail->next.compare_exchange_weak(temp, newNode)){
-	    std::this_thread::yield();
-	    temp = nullptr;
-	    oldtail = m_tail;
-	}
-        m_tail.compare_exchange_strong(oldtail, newNode);*/
-    }
+    }*/
+    lflag += 1;
+	ThreadPoolDemo::Node newNode(task);
+	//newNode.task = task;
+    m_q.enqueue(newNode);
     return;
 }
 
+
 bool ThreadPoolDemo::CPriqueue::pop_front(std::function<void()>& task){
-    Node* oldhead = m_head;//内存引用计数加一,通过hash_map
-    //oldhead = share_ref.get();
-    do{
-        //oldhead = m_head;
-	if(oldhead->next == nullptr){
-	    lflag1 +=1;
-	    return false;
-	}
-    }while(!m_head.compare_exchange_weak(oldhead, oldhead->next));
-		lflag += 1;
-    oldhead->next.load()->load(task);
-    //delete oldhead;//TODO,内存引用计数，内存引用计数减一
-    return true;
+    //Node* nn = nullptr;
+	ThreadPoolDemo::Node nn;
+    bool ret = m_q.try_dequeue(nn);
+    if(ret){
+        lflag1 += 1;	
+        //task = nn->task;
+		task = nn.task;
+		//delete nn;
+		return true;
+    }
+    return false;
 }
-
-bool ThreadPoolDemo::CPriqueue::pop_front1(std::function<void()>& task){
-    Node* oldhead = m_head1.head;//内存引用计数加一,通过hash_map
-    head1.count += 1;
-    //oldhead = share_ref.get();
-    do{
-        //oldhead = m_head;
-    if(oldhead->next == nullptr){
-        lflag1 +=1;
-        return false;
-    }
-    }while(!m_head.compare_exchange_weak(oldhead, oldhead->next));
-        lflag += 1;
-    oldhead->next.load()->load(task);
-    //delete oldhead;//TODO,内存引用计数，内存引用计数减一
-    m_head1.delete();
-    return true;
-}
-/*
-//bool pop_front(std::shared_ptr<std::function<void()>>& task);
-bool ThreadPoolDemo::CPriqueue::pop_front(std::shared_ptr<std::function<void()>>& task){
-    //判断节点是否指向Eof
-    //YES,m_head = m_Eof->next
-    //NO, flag = m_head 不处理
-   if( m_head == m_tail){
-       lflag1 += 1;
-       return false;
-   }
-     
-    Node* oldhead = m_head;
-    while(oldhead->next == nullptr){
-	    std::this_thread::yield();
-    }
-    //Node* newhead = oldhead->next;
-    //CAS:if m_head == oldhead, then m_head = newhead
-    while(!m_head.compare_exchange_weak(oldhead, oldhead->next)){
-     while(oldhead->next == nullptr){
-	     std::this_thread::yield();
-     }
-	     std::this_thread::yield();
-    }
-    //task = *((oldhead->next.load()->ptr_task).load());
-    task = oldhead->next.load()->ptr_share_task;
-    while(task.get() == nullptr){
-       lflag +=1;
-       task = oldhead->next.load()->ptr_share_task;
-    //task = oldhead->next->task;
-    //task = *((oldhead->next.load()->ptr_task).load());
-    //task = oldhead->next.load()->ptr_task;
-    std::this_thread::yield();
-    }
-    delete oldhead;  // 需要修改
-    return true;
-}*/
-
-
-
-
 
 void ThreadPoolDemo::CPriqueue::print(){
-    Node* flag = m_head.load()->next;
-    int num = 0;
-    while(flag != nullptr){
-        ++num; 
-	//std::cout << flag->value << " ";
-	flag = flag->next;
-    }
-    std::cout << std::endl;
-    std::cout <<"num: " <<num << std::endl;
-    std::cout <<"flag: " << lflag.load() << std::endl;
-    std::cout <<"flag1: " << lflag1.load() << std::endl;
-    std::cout <<"head: " << static_cast<void *>(m_head.load()) << std::endl;
-    std::cout <<"tail: " << static_cast<void *>(m_tail.load()) << std::endl;
+    std::cout << "lflag: " << lflag.load() << std::endl;
+    std::cout << "lfag1: "<< lflag1.load() << std::endl;
 }
 
 bool ThreadPoolDemo::CPriqueue::empty(){
-    return (m_head.load()->next == nullptr);
+    return (m_q.size_approx() == 0);
 }
 
 void ThreadPoolDemo::CPriqueue::init(){
-    std::function<void()> tt = [](){return;};
-    m_head = new Node(tt);
-    //m_head = m_Eof;
-    m_tail = m_head.load();
-    m_head.load()->next = nullptr;
 }
+
+/*
+ThreadPoolDemo::CTimingQueue
+*/
+void ThreadPoolDemo::CTimingQueue::push_back(const std::function<void()>& task, int time, bool once){
+	ThreadPoolDemo::CTimingQueue::TimingNode node;
+	node.task = task;
+	node.delay = time;
+	node.once = once;
+	m_q.enqueue(node);	
+}
+
+void ThreadPoolDemo::CTimingQueue::push_back(const ThreadPoolDemo::CTimingQueue::TimingNode& node){
+	m_q.enqueue(node);
+}
+
+bool ThreadPoolDemo::CTimingQueue::pop_front(std::function<void()>& task){
+	ThreadPoolDemo::CTimingQueue::TimingNode n;
+	if(m_q.try_dequeue(n)){
+		task = [n, this](){
+			sleep(n.delay);
+			n.task();
+			if(!n.once){
+			   this->push_back(n);
+			}
+		};
+		return true;
+	}
+	return false;
+}
+/*
+ThreadPoolDemo::CPriqueueManager
+*/
+
+void ThreadPoolDemo::CPriqueueManager::push_task(const std::function<void()>& task, TaskAttr attr){
+	switch(attr.type){
+		case Type::Io:
+		{      
+			if(attr.priority == Priority::Advanced){
+				m_AdvancedQueue.push_back(task);
+
+			}else{
+				m_NormalQueue.push_back(task);
+			} 
+		}
+		break;
+		case Type::Timing:
+		{
+			m_TimingQueue.push_back(task, attr.time, attr.once);
+		}
+		case Type::Calculate:
+		{
+			//TODO
+			m_CalculateQueue.push_back(task);
+		} 
+		default:
+		return;
+	}
+}
+
+bool ThreadPoolDemo::CPriqueueManager::pop_task(std::function<void()> &task, Priority pri, Type type){
+	switch(type){
+		case Type::Io:
+		{
+			//TODO
+			if(pri == Priority::Advanced){
+                                return m_AdvancedQueue.pop_front(task) ? true : m_NormalQueue.pop_front(task);
+/*				if(!m_AdvancedQueue.empty()){
+					return m_AdvancedQueue.pop_front(task);
+				}else{
+					return m_NormalQueue.pop_front(task);
+				}*/
+			}else{
+                                return m_NormalQueue.pop_front(task) ? true : m_AdvancedQueue.pop_front(task);
+				/*if(!m_NormalQueue.empty()){
+					return m_NormalQueue.pop_front(task);
+				}else{
+					return m_AdvancedQueue.pop_front(task);
+				}*/
+		   }
+		}
+		break;
+	   case Type::Timing:
+	   {
+		   return m_TimingQueue.pop_front(task);
+	   }
+	   break;
+	   case Type::Calculate:
+	   {
+		   return m_CalculateQueue.pop_front(task);
+	   }
+	}	
+	return false;
+}
+
+
+bool ThreadPoolDemo::CPriqueueManager::empty(Type type){
+	return m_AdvancedQueue.empty() && m_NormalQueue.empty(); 
+}
+
+
+
