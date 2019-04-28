@@ -17,7 +17,7 @@ include_directories(
         ${PROJECT_SOURCE_DIR}/include
         ${PROJECT_SOURCE_DIR}/Thread
         )
+add_executable(hello_world Threaddemo.cpp Thread/Queue.cpp Thread/ThreadPool.cpp)
+target_link_libraries(hello_world pthread)
+#target_link_libraries(hello_world profiler tcmalloc pthread)
 
-add_executable(hello_world Threaddemo.cpp Thread/Queue.cpp)
-#target_link_libraries(hello_world pthread)
-target_link_libraries(hello_world profiler tcmalloc pthread)
