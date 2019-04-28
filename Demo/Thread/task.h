@@ -1,33 +1,15 @@
 #pragma once
 #include <iostream>
 #include <future>
-#include <thread>
+//#include <thread>
 #include <memory>
 #include <unistd.h>
 #include <queue>
+#include "BaseStruct.h"
+#include "ThreadPool.h"
 
 namespace ThreadPoolDemo{
 /*
-struct TaskData{
-	std::future<ReType> m_response;
-	std::function<ReType()> m_TaskFun;
-	std::atomic<bool> m_IsRun;
-};
-*/
-//临时代码
-//------------------------------------
-static std::queue< std::function<void()> > *tasks  = new std::queue< std::function<void()> >();
-template<class T>
-void push(T task){
-//    (*task)();
-    //tasks->emplace([task]() { (*task)(); });
-    std::thread th([task](){ sleep(3); std::cout << "exec" << std::endl; (*task)();});
-    th.detach();
-} 
-//-------------------------------------
-#define PUSHTASK(task, attr) push(task); 
-
-
 enum Type{
     Io = 0,
     Timing,
@@ -42,7 +24,26 @@ struct TaskAttr{
     Type type = Type::Io;
     Priority proprity = Priority::Normal;
     int time = 0;
+};*/
+/*
+struct TaskData{
+	std::future<ReType> m_response;
+	std::function<ReType()> m_TaskFun;
+	std::atomic<bool> m_IsRun;
 };
+*/
+//class CThreadManger;
+struct TaskAttr;
+//临时代码
+//------------------------------------
+
+static CThreadManger* Obj = new CThreadManger(100, 4);
+template<class T>
+void push(T task, TaskAttr attr){
+    Obj->push_task(task, attr);
+} 
+//-------------------------------------
+#define PUSHTASK(task, attr) push(task, attr); 
 
 template<class F, class... Args>
 class CTaskObj;
@@ -138,10 +139,9 @@ public:
 private:
     CTaskObj(){}
     std::function<ReType()> m_TaskFun;
-    //std::atomic<bool> m_IsRun;
     TaskAttr m_attr;
-     //std::shared_ptr<std::packaged_task<ReType()>> m_task;
-     std::weak_ptr<std::packaged_task<ReType()>> m_task;
+    
+    std::weak_ptr<std::packaged_task<ReType()>> m_task;
 };
 }
 
@@ -171,9 +171,9 @@ bool ThreadPoolDemo::CTaskObj<F, Args...>::Start(){
 	m_TaskFun = nullptr;
         m_task = task;
 	GetResponse = task->get_future();
-        PUSHTASK(task, m_attr);
+        PUSHTASK([task](){(*task)();}, m_attr);
     }
-    std::cout << "ref count: " << m_task.use_count() << std::endl;
+    //std::cout << "ref count: " << m_task.use_count() << std::endl;
     return !m_task.expired();
 }
 template<class F, class... Args>
