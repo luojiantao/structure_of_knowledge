@@ -3,7 +3,9 @@
 #include "ThreadPool.h"
 #include <functional>
 #include <thread>
+#include <list>
 int add(int a, int b){
+    std::cout << "aaaa" << std::endl;
     return a + b;
 }
 void add1(){
@@ -16,18 +18,30 @@ return;
 }
 #define NUM 200
 int main(){
-   /*{
+   {
+    //unsigned char* m_random = new unsigned char[2];
+    //char m_random  = {0};
+    //m_random |= 1 << 3; 
+    //m_random |= 1 << 7;
+    //int retx = (m_random >>  4) &1;
+    //std::cout << retx << std::endl;
+    //return 0; 
+    //m_random |= 1 << 11; 
+    //m_random |= 1 << 15; 
     ThreadPoolDemo::TaskAttr attr;
+    attr.type = ThreadPoolDemo::Type::Calculate;
     std::function<int(int,int)> func = add;
     std::function<void(int,int)> func2 = add2;
     auto aa = ThreadPoolDemo::Make_CTaskObj(attr, add, 1,1);
     //aa->SetTaskFun(func, 1,6);
     std::cout << "ret: " <<  aa->Start() << std::endl;
     // aa->Start();
-    // aa->GetResponse();
-    //std::cout << "test " << aa->GetResponse() <<std::endl;
+    //aa->GetResponse();
+    std::cout << "test " << aa->GetResponse() <<std::endl;
     }
-    std::cout << "test1" << std::endl;
+    getchar();
+    return 0;
+   /* std::cout << "test1" << std::endl;
     std::list<int> ll1;
     //ll1.push_front(1);
     ll1.push_front(1);
@@ -44,6 +58,8 @@ int main(){
     //
     */
     //-------------------------
+    {
+    }
     ThreadPoolDemo::CPriqueue li;
     {
 	auto fun_test = [&li](int v){
@@ -53,7 +69,7 @@ int main(){
                 std::function<void()> func = [](){
 			int ret = 1+ 1;
 			//usleep(1);
-//	                std::cout << ret << std::endl;
+	                std::cout << ret << std::endl;
 			return;
 		}; 
 	        li.push_back(func);
@@ -65,7 +81,7 @@ int main(){
             std::function<void()> a = nullptr;	    
             //std::shared_ptr<std::function<void()>> a;	    
 	    if(li.pop_front(a)){
-	        (a)();
+	        //(a)();
 	    }
 	    }
 	};
@@ -96,11 +112,8 @@ int main(){
 //        li.push_back(6);
 //        li.push_back(7);
 	//sleep(2);
-	li.print();
-	li.print_ptr();
 	std::cout << "-----------" << std::endl;
-	//li.pop_front();
-	li.print_ptr();
+	li.print();
 	std::cout << "-----------" << std::endl;
 	std::function<void()> val;
        int num = 0;
@@ -113,7 +126,8 @@ int main(){
 	std::cout << "pop num: " << num << std::endl;
 	std::cout << "-----------" << std::endl;
 	std::cout << "empty: " << li.empty() << std::endl;
-//	getchar();
+	//getchar();
     }
     return 0;
 }
+
