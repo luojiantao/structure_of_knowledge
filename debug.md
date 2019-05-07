@@ -24,6 +24,10 @@
   
   g++ [...] -g -o myprogram -ltcmalloc
   HEAPPROFILE=/tmp/netheap ./myprogram
+  HEAP_PROFILE_INUSE_INTERVAL=1000 ./hello_world   #1000申请1000个字节打印一次信息
+  //HEAP_PROFILE_ALLOCATION_INTERVAL   分配一定内存时，打印内存信息文件
+  //HEAP_PROFILE_TIME_INTERVAL   定时打印，单位是秒
+  //HEAPPROFILESIGNAL            接受到指定信号时打印
   # 如果项目中不可以链接tcmalloc,可以使用如下调用方式(执行程序需要带有调试信息，符号表)
   LD_PRELOAD="/usr/local/lib/libtcmalloc.so" HEAPPROFILE=/tmp/netheap ./myprogram
   ```
