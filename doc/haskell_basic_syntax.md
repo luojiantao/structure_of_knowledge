@@ -9,10 +9,22 @@
 3. not 非
 ## compare 比较
 1. == 相等,成立返回true
+
 2. /= 不相等，成立返回true
 
-## function
+## if
+- haskell中if语句的else部分是不可省略
+- haskell 中的if语句的另一个特点就是它其实是个表达式  
+	**表达式就是返回一个值的一段代码**：5是个表达式，它返回5；4+8是个表达式；x+y也是个表达式，它返 回x+y的结果。正由于else是强制的，if语句一定会返回某个值，所以说if语句也是个表达式。如果要给刚刚定义的函数的结果都加上1
+```haskell
+doubleSmallNumber x = if x > 100                           
+                                     then x                           
+                                     else  x*2  // 
+doubleSmallNumber' x = (if x > 100 then x else x*2) + 1 // func 101  return 102,去掉括号，返回101
+```
 
+## function
+因为首字母大写的函数是不允许的
 
 1. 中缀函数  
 	用两个参数将它夹在中央.使用``让函数以中缀的方式调用
@@ -31,11 +43,16 @@ succ 8 //前面事函数名，参数用空格分开
 ```
 ### function declaration and definition
 
-函数的声明与它的调用形式大体相同，都是先函数名，后跟由空格分隔的参数表。但在声明中一定要在 = 后面定义函数的行为。
+- 函数的声明与它的调用形式大体相同，都是先函数名，后跟由空格分隔的参数表。但在声明中一定要在 = 后面定义函数的行为。
 ```haskell
 doubleMe x = x + x 
 
 ```
+- 无参函数  
+	没有参数的函数通常被称作“定义”（或者“名字”），一旦定义，conanO'Brien就与字符串"It's a-me, Conan O'Brien!"完全等价，且它的值不可以修改。
+	```
+	conanO'Brien = "It's a-me, Conan O'Brien!"
+	```
 ## 调用优先级，priority
 函数调用拥有最高的优先级
 
